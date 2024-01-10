@@ -3,3 +3,4 @@ alias lh exa -lah --color=always --group-directories-first $*
 alias ll ls -alF
 alias la ls -A
 alias l ls -da
+alias linit git clone git@github.com:w8ste/Latex-Template.git && cd Latex-Template/ && mv template.tex .. && mv tuda_logo.pdf .. && cd .. && rm -rf Latex-Template
