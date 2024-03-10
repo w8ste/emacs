@@ -240,8 +240,11 @@
 :hook
 ((tex-mode . lsp-deferred)
 (tex-mode . (lambda ()
-(push (list 'output-pdf "Evince")
+(push (list 'output-pdf "Zathura")
 TeX-view-program-selection)))))
+
+	 (setq TeX-view-program-selection '((output-pdf "Zathura"))
+    TeX-source-correlate-start-server t)
 
 (use-package smartparens
   :init
@@ -525,7 +528,11 @@ one, an error is signaled."
   :init
   (setq lsp-keymap-prefix "C-c l")
   (setq lsp-modeline-diagnostics-enable nil)
-  :hook (lsp-after-apply-edits-hook t)
+  :hook (lsp-after-apply-edits-hook t
+       ;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+              (LaTeX-mode . lsp-deferred)
+              ;; if you want which-key integration
+              (lsp-mode . lsp-enable-which-key-integration))
   :custom
   (lsp-rust-analyzer-cargo-watch-command "clippy")
   (lsp-eldoc-render-all t)
@@ -547,16 +554,27 @@ one, an error is signaled."
   ;; (lsp-enable-whichkey-integration t)
   (lsp))
 
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-doc-position 'bottom))
 
-(use-package lsp-treemacs
-  :after lsp)
 
-(use-package lsp-ivy
-  :after lsp)
+     (use-package lsp-latex
+       ;; this uses texlab
+       :ensure t
+       :config
+       (progn
+         (add-hook 'bibtex-mode-hook 'lsp)
+         )
+       )
+
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-doc-position 'bottom))
+
+  (use-package lsp-treemacs
+    :after lsp)
+
+  (use-package lsp-ivy
+    :after lsp)
 
 (use-package company
   :after lsp-mode
@@ -640,14 +658,6 @@ one, an error is signaled."
                    file)))
     (compile compile-command)))
 (global-set-key [f9] 'code-compile)
-
-(use-package lsp-ltex
-:ensure t
-:hook (text-mode . (lambda ()
-                     (require 'lsp-ltex)
-                     (lsp)))  ; or lsp-deferred
-:init
-(setq lsp-ltex-version "14.0.0"))  ; make sure you have set this, see below
 
 (use-package scala-mode
   :mode "\\.s\\(cala\\|bt\\)$")
