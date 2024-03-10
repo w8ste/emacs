@@ -244,41 +244,112 @@ chmod +x correct.sh
 chmod u+x correct.sh 
 ./correct.sh blinky_tb blinky_tb_full blinky
 cd ../03
-ls
 pdflatex -recorder 6.tex 
 cp ../02/tuda_logo.pdf .
-ls
-exit
 cd ..
 build/mavlc demo.mavl --dump-dot-ast
 touch main.py
 pip install torch
-ls
 lh
-ls
 pip install toch
 pip install torch
 cd
 ;h
 lh
 cd .virtualenvs/
-ls
 cd venv
 pip install toch
 pip install torch
 pip3 install torch
-ls
 cd lib/
-ls
 pip install torch
 ks
-ls
 cd..
 cd ll
 cd ..
-ls
 cat pyvenv.cfg 
 cd bin/
-ls
 pip install torch
 ./pip install torch
+cd ../../../..
+cd ..
+cd ../../../..
+cd ..
+cd ../../../..
+cd //
+cd 
+cd Documents/eicb/eicb-p1/
+./gradlew test -i
+cp ../03/tuda_logo.pdf .
+cp ../../../Modellierung/03/tuda_logo.pdf .
+cp template.tex test.tex
+cd ../..
+cd ..
+cd se/
+cp 04/tuda_logo.pdf 05
+exot
+cp ../04/tuda_logo.pdf .
+cp template.tex eicb_t2.tex
+mv cisco-secure-client-linux64-5.1.0.136-core-vpn-webdeploy-k9.sh cisco-secure-client-linux64-5.1.0.136-core-vpn-webdeploy-k9.sh
+mv cisco-secure-client-linux64-5.1.0.136-core-vpn-webdeploy-k9.sh ..
+cc main.cpp -o hippofetch
+gcc -o main main.cpp
+g++ main.cpp -o main
+./main
+g++ main.cpp -o main
+make -k
+rm main
+make -k
+make
+make
+./hippofetch 
+mv Xor.runconfig comb/xor/
+linit
+cd University/se/
+linit
+mkdir 08
+mv template.tex tuda_logo.pdf 08
+g++ -o a 2465274_Aufgabe3a.cpp 
+./a
+g++ -o a 2465274_Aufgabe3a.cpp 
+./a
+g++ -o a 2465274_Aufgabe3a.cpp 
+./a
+g++ -o a 2465274_Aufgabe3a.cpp 
+./a
+g++ -o a 2465274_Aufgabe3a.cpp 
+./a
+g++ -o a 2465274_Aufgabe3a.cpp 
+./a
+g++ -o a 2465274_Aufgabe3a.cpp 
+./a
+76 55 45 15 71 64 67 12 60 53 54 5F 17 43 47 51 58 46 51 5F 40 12 7D 5E 5B 57 59 14 57 5D 58 50 5C 17 53 47 40 53 5B 12 65 41 46 47 55 5D 12 5E 5A 41 14 58 50 47 52 14 78 55 5E 47 13 17 63 5B 46 16 53 40 52 41 57 5A 16 40 5C 44 14 61 5D 53 15 5B 59 14 00 04 04 01 12 40 5D 57 50 53 47 12 4D 41 12 47 53 5D 57 59 1A 
+g++ -o a 2465274_Aufgabe3a.cpp ./a
+g++ -o a 2465274_Aufgabe3a.cpp 
+./a
+g++ -o a 2465274_Aufgabe3a.cpp 
+./a
+g++ -o a 2465274_Aufgabe3a.cpp 
+./a
+g++ -o a 2465274_Aufgabe3a.cpp 
+./a
+:q
+linit
+cd ..
+mkdir summaries
+cd summaries/
+mkdir krypto
+cd krypto/
+linit
+mv template.tex summary.tex
+mkdir img
+cd img
+ls
+cd ../eiki/
+ls
+mkdir img
+exit
+rustc main.rs 
+ls
+./main
+exit

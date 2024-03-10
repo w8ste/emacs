@@ -235,13 +235,13 @@
   :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
 
 (use-package auctex
-  :mode
-  ("\\.tex\\'" . TeX-latex-mode)
-  :hook
-  ((LaTeX-mode . lsp-deferred)
-   (LaTeX-mode . (lambda ()
-                   (push (list 'output-pdf "Evince")
-                         TeX-view-program-selection)))))
+:mode
+("\\.tex\\'" . tex-mode)
+:hook
+((tex-mode . lsp-deferred)
+(tex-mode . (lambda ()
+(push (list 'output-pdf "Evince")
+TeX-view-program-selection)))))
 
 (use-package smartparens
   :init
@@ -414,13 +414,13 @@ one, an error is signaled."
 (use-package gradle-mode)
 
 ;;(use-package highlight-indent-guides
-  ;;:config
-  ;;(set-face-background 'highlight-indent-guides-odd-face "darkgray")
-  ;;(set-face-background 'highlight-indent-guides-even-face "dimgray")
-  ;;(set-face-foreground 'highlight-indent-guides-character-face "dimgray")
-  ;;(add-hook 'c++-mode-hook 'highlight-indent-guides-mode)
-  ;;(add-hook 'java-mode-hook 'highlight-indent-guides-mode)
-  ;;(add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
+;;:config
+;;(set-face-background 'highlight-indent-guides-odd-face "darkgray")
+;;(set-face-background 'highlight-indent-guides-even-face "dimgray")
+;;(set-face-foreground 'highlight-indent-guides-character-face "dimgray")
+;;(add-hook 'c++-mode-hook 'highlight-indent-guides-mode)
+;;(add-hook 'java-mode-hook 'highlight-indent-guides-mode)
+;;(add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 
 (use-package hl-todo
   :hook ((org-mode . hl-todo-mode)
@@ -435,6 +435,40 @@ one, an error is signaled."
           ("NOTE"       success bold)
           ("DEPRECATED" font-lock-doc-face bold))))
 
+; START TABS CONFIG
+;; Create a variable for our preferred tab width
+(setq custom-tab-width 4)
+
+;; Two callable functions for enabling/disabling tabs in Emacs
+(defun disable-tabs () (setq indent-tabs-mode nil))
+(defun enable-tabs  ()
+  (local-set-key (kbd "TAB") 'tab-to-tab-stop)
+  (setq indent-tabs-mode t)
+  (setq tab-width custom-tab-width))
+
+;; Hooks to Enable Tabs
+(add-hook 'prog-mode-hook 'enable-tabs)
+;; Hooks to Disable Tabs
+(add-hook 'lisp-mode-hook 'enable-tabs)
+(add-hook 'emacs-lisp-mode-hook 'enable-tabs)
+(enable-tabs)
+;; Language-Specific Tweaks
+(setq-default python-indent-offset custom-tab-width) ;; Python
+(setq-default js-indent-level custom-tab-width)      ;; Javascript
+(setq-default scala-indent-level custom-tab-width) 
+;; Making electric-indent behave sanely
+(setq-default electric-indent-inhibit t)
+
+;; Make the backspace properly erase the tab instead of
+;; removing 1 space at a time.
+(setq backward-delete-char-untabify-method 'hungry)
+
+;; (OPTIONAL) Shift width for evil-mode users
+;; For the vim-like motions of ">>" and "<<".
+(setq-default evil-shift-width custom-tab-width)
+
+; END TABS CONFIG
+
 (use-package counsel
   :bind (("C-x b" . 'counsel-ibuffer)
          :map minibuffer-local-map
@@ -448,7 +482,6 @@ one, an error is signaled."
     :diminish
     :bind (("C-s" . swiper)
            :map ivy-minibuffer-map
-           ("TAB" . ivy-alt-done)
            ("C-l" . ivy-alt-done)
            ("C-j" . ivy-next-line)
            ("C-k" . ivy-previous-line)
@@ -493,6 +526,19 @@ one, an error is signaled."
   (setq lsp-keymap-prefix "C-c l")
   (setq lsp-modeline-diagnostics-enable nil)
   :hook (lsp-after-apply-edits-hook t)
+  :custom
+  (lsp-rust-analyzer-cargo-watch-command "clippy")
+  (lsp-eldoc-render-all t)
+  (lsp-idle-delay 0.6)
+  ;; enable / disable the hints as you prefer:
+  (lsp-inlay-hint-enable t)
+  ;; These are optional configurations. See https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/#lsp-rust-analyzer-display-chaining-hints for a full list
+  (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+  (lsp-rust-analyzer-display-chaining-hints t)
+  (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+  (lsp-rust-analyzer-display-closure-return-type-hints t)
+  (lsp-rust-analyzer-display-parameter-hints nil)
+  (lsp-rust-analyzer-display-reborrow-hints nil)
   :config
   (add-hook 'c++-mode-hook 'lsp)
   (add-hook 'java-mode-hook 'lsp)
@@ -506,11 +552,11 @@ one, an error is signaled."
   :custom
   (lsp-ui-doc-position 'bottom))
 
-  (use-package lsp-treemacs
-    :after lsp)
+(use-package lsp-treemacs
+  :after lsp)
 
-  (use-package lsp-ivy
-    :after lsp)
+(use-package lsp-ivy
+  :after lsp)
 
 (use-package company
   :after lsp-mode
@@ -520,7 +566,7 @@ one, an error is signaled."
          ("C-j" . company-select-next)
          ("C-k" . company-select-previous))
         (:map lsp-mode-map
-         ("<tab>" . company-indent-or-complete-common))
+         ("C-i" . company-indent-or-complete-common))
   :custom
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0))
@@ -596,13 +642,12 @@ one, an error is signaled."
 (global-set-key [f9] 'code-compile)
 
 (use-package lsp-ltex
-  :diminish
-  :ensure t
-  :hook (tex-mode . (lambda ()
-                      (require 'lsp-ltex)
-                      (lsp)))  ; or lsp-deferred
-  :init
-  (setq lsp-ltex-version "16.0.0"))  ; make sure you have set this, see below
+:ensure t
+:hook (text-mode . (lambda ()
+                     (require 'lsp-ltex)
+                     (lsp)))  ; or lsp-deferred
+:init
+(setq lsp-ltex-version "14.0.0"))  ; make sure you have set this, see below
 
 (use-package scala-mode
   :mode "\\.s\\(cala\\|bt\\)$")
@@ -666,8 +711,7 @@ one, an error is signaled."
 (use-package toc-org
   :commands toc-org-enable
   :init (add-hook 'org-mode-hook 'toc-org-enable)
-  (setq org-agenda-start-on-weekday 1)
-  (setq org-agenda-files (list "~/University/uni.org")))
+  (setq org-agenda-start-on-weekday 1))
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (use-package org-bullets
@@ -716,6 +760,39 @@ one, an error is signaled."
   :diminish
   :hook 
   ((org-mode prog-mode) . rainbow-mode))
+
+(require 'package)
+(setq package-archives '(("melpa" . "http://melpa.org/packages/")
+                         ("gnu" . "http://elpa.gnu.org/packages/")))
+(use-package rustic
+  :ensure
+  :bind (:map rustic-mode-map
+              ("SPC-r-j" . lsp-ui-imenu)
+              ("SPC-r-?" . lsp-find-references)
+              ("SPC-r-l" . flycheck-list-errors)
+              ("SPC-r-a" . lsp-execute-code-action)
+              ("SPC-r-r" . lsp-rename)
+              ("SPC-r-q" . lsp-workspace-restart)
+              ("SPC-r-q" . lsp-workspace-shutdown)
+              ("SPC-r-s" . lsp-rust-analyzer-status))
+  :config
+  ;; uncomment for less flashiness
+  ;; (setq lsp-eldoc-hook nil)
+  ;; (setq lsp-enable-symbol-highlighting nil)
+  ;; (setq lsp-signature-auto-activate nil)
+
+  ;; comment to disable rustfmt on save
+  (setq rustic-format-on-save t)
+  (add-hook 'rustic-mode-hook 'rk/rustic-mode-hook))
+
+(defun rk/rustic-mode-hook ()
+  ;; so that run c-c c-c c-r works without having to confirm, but don't try to
+  ;; save rust buffers that are not file visiting. once
+  ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
+  ;; no longer be necessary.
+  (when buffer-file-name
+    (setq-local buffer-save-without-query t))
+  (add-hook 'before-save-hook 'lsp-format-buffer nil t))
 
 (use-package eshell-syntax-highlighting
   :after esh-mode
