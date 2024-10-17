@@ -15,7 +15,7 @@
  '(highlight-indent-guides-method 'character)
  '(ignored-local-variable-values '((TeX-master . t)))
  '(lsp-clangd-version "16.0.2")
- '(package-selected-packages '(auctex lua-mode)))
+ '(package-selected-packages '(python-pytest auctex lua-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

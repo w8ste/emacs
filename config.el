@@ -215,6 +215,19 @@
     "nt" '(neotree-toggle :wk "Toggle Neotree")
     "nc" '(neotree-create-node :wk "Create File")
     "nd" '(neotree-delete-node :wk "Delete File"))
+
+      ;;Pytest
+  (w8ste/leader-keys
+      "c" '(:ignore t :wk "PyTest")
+      "ca" '(pytest-all :wk "All")
+      "cm" '(pytest-module :wk "Module")
+        "co" '(pytest-one :wk "One")
+        "cr" '(pytest-run :wk "Run")
+        "cc" '(pytest-again :wk "Again")
+        "cd" '(pytest-directory :wk "Directory")
+        "cpa" '(pytest-pdb-all :wk "pdb All")
+        "cpm" '(pytest-pdb-module :wk "pdb Module")
+        "cpp" '(pytest-pdb-one :wk "pdb One"))
   )
 ;; Setting RETURN key in org-mode to follow links
 (setq org-return-follows-link  t)
@@ -364,6 +377,13 @@ one, an error is signaled."
   :init
   (elcord-mode))
 
+(defun make-shell (name)
+  "Create a shell buffer named NAME."
+  (interactive "sName: ")
+  (setq name (concat "$" name))
+  (eshell)
+  (rename-buffer name))
+
 (set-frame-font "JetBrains Mono Medium 19")
 (set-face-attribute 'default nil
                     :font "JetBrains Mono Medium"
@@ -416,14 +436,14 @@ one, an error is signaled."
 
 (use-package gradle-mode)
 
-;;(use-package highlight-indent-guides
-;;:config
-;;(set-face-background 'highlight-indent-guides-odd-face "darkgray")
-;;(set-face-background 'highlight-indent-guides-even-face "dimgray")
-;;(set-face-foreground 'highlight-indent-guides-character-face "dimgray")
-;;(add-hook 'c++-mode-hook 'highlight-indent-guides-mode)
-;;(add-hook 'java-mode-hook 'highlight-indent-guides-mode)
-;;(add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
+(use-package highlight-indent-guides
+:config
+(set-face-background 'highlight-indent-guides-odd-face "darkgray")
+(set-face-background 'highlight-indent-guides-even-face "dimgray")
+(set-face-foreground 'highlight-indent-guides-character-face "dimgray")
+(add-hook 'c++-mode-hook 'highlight-indent-guides-mode)
+(add-hook 'java-mode-hook 'highlight-indent-guides-mode)
+(add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 
 (use-package hl-todo
   :hook ((org-mode . hl-todo-mode)
@@ -565,6 +585,7 @@ one, an error is signaled."
          )
        )
 
+       ;; this uses texlab
   (use-package lsp-ui
     :hook (lsp-mode . lsp-ui-mode)
     :custom
@@ -631,6 +652,8 @@ one, an error is signaled."
 (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)  ;; If using projectile
 )
 
+(use-package pytest)
+
 (use-package verilog-mode
   :ensure t
   :hook (verilog-mode . (lambda ()
@@ -690,6 +713,20 @@ one, an error is signaled."
   (lsp-metals-enable-semantic-highlighting t)
   :hook (scala-mode . lsp))
 
+(setq package-selected-packages 
+  '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
+    ;; Optional packages
+    lsp-ui company hover))
+
+(when (cl-find-if-not #'package-installed-p package-selected-packages)
+  (package-refresh-contents)
+  (mapc #'package-install package-selected-packages))
+
+(add-hook 'dart-mode-hook 'lsp)
+
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024))
+
 (global-set-key [escape] 'keyboard-escape-quit)
 
 (use-package doom-modeline
@@ -721,7 +758,8 @@ one, an error is signaled."
 (use-package toc-org
   :commands toc-org-enable
   :init (add-hook 'org-mode-hook 'toc-org-enable)
-  (setq org-agenda-start-on-weekday 1))
+  (setq org-agenda-start-on-weekday 1)
+  (setq org-agenda-files (list "~/University/uni.org")))
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (use-package org-bullets
@@ -776,15 +814,6 @@ one, an error is signaled."
                          ("gnu" . "http://elpa.gnu.org/packages/")))
 (use-package rustic
   :ensure
-  :bind (:map rustic-mode-map
-              ("SPC-r-j" . lsp-ui-imenu)
-              ("SPC-r-?" . lsp-find-references)
-              ("SPC-r-l" . flycheck-list-errors)
-              ("SPC-r-a" . lsp-execute-code-action)
-              ("SPC-r-r" . lsp-rename)
-              ("SPC-r-q" . lsp-workspace-restart)
-              ("SPC-r-q" . lsp-workspace-shutdown)
-              ("SPC-r-s" . lsp-rust-analyzer-status))
   :config
   ;; uncomment for less flashiness
   ;; (setq lsp-eldoc-hook nil)
@@ -910,3 +939,21 @@ one, an error is signaled."
   (when (and (boundp 'yas-minor-mode) yas-minor-mode)
     (let ((yas-buffer-local-condition ''(require-snippet-condition . auto)))
       (yas-expand))))
+
+(defun unbind-shift-keybindings ()
+  "Unbind all keybindings containing the Shift key."
+  (interactive)
+  (let ((shift-key-prefixes '("S-" "s-")))
+    (mapc (lambda (keymap)
+            (mapc (lambda (prefix)
+                    (mapc (lambda (key)
+                            (define-key keymap (kbd (concat prefix key)) nil))
+                          '("!" "\"" "#" "$" "%" "&" "'" "(" ")" "*"
+                            "+" "," "-" "." "/" ":" ";" "<" "=" ">" "?"
+                            "@" "[" "\\" "]" "^" "_" "`" "{" "|" "}" "~"
+                            "0" "1" "2" "3" "4" "5" "6" "7" "8" "9"
+                            "A" "B" "C" "D" "E" "F" "G" "H" "I" "J"
+                            "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T"
+                            "U" "V" "W" "X" "Y" "Z")))
+                  shift-key-prefixes))
+          (list global-map (current-local-map)))))
