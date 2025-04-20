@@ -26,206 +26,14 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(use-package evil
-  :bind (:map evil-insert-state-map ("C-k" . nil)) 
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below t)
-  (evil-mode))
-(use-package evil-collection
-  :after evil
-  :config
-  (setq evil-collection-mode-list '(dashboard dired ibuffer))
-  (evil-collection-init))
-
-;; settings keybindings for evil
-(with-eval-after-load 'evil-maps
-  (define-key evil-motion-state-map (kbd "SPC") nil)
-  (define-key evil-motion-state-map (kbd "RET") nil)
-  (define-key evil-visual-state-map (kbd "C-c") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-c") 'evil-normal-state)
-  (define-key evil-motion-state-map (kbd "C-e") nil)
-  (define-key evil-visual-state-map (kbd "C-c") 'evil-exit-visual-state)
-  (define-key evil-motion-state-map (kbd "TAB") nil))
-
-(keymap-global-set "C-c k" 'kill-line)
-(use-package general
-  :config
-  (general-evil-setup)
-  ;; set up 'SPC' as the global leader key
-  (general-create-definer w8ste/leader-keys
-    :states '(normal insert visual emacs)
-    :keymaps 'override
-    :prefix "SPC" ;; set leader
-    :global-prefix "M-SPC") ;; access leader in insert mode
-
-  ;; buffer keybindings
-  (w8ste/leader-keys
-    "b" '(:ignore t :wk "Bookmarks/Buffer")
-    "bb" '(switch-to-buffer :wk "Switch buffer")
-    "bk" '(kill-this-buffer :wk "Kill this buffer")
-    "bi" '(ibuffer :wk "Ibuffer")
-    "bn" '(next-buffer :wk "Next buffer")
-    "bp" '(previous-buffer :wk "Previous buffer")
-    "br" '(revert-buffer :wk "Reload buffer")
-    "b R" '(rename-buffer :wk "Rename buffer")
-    "b s" '(basic-save-buffer :wk "Save buffer")
-    "b S" '(save-some-buffers :wk "Save multiple buffers") 
-    ;; Bookmarks
-    "b d" '(bookmark-delete :wk "Delete bookmark")
-    "b l" '(list-bookmarks :wk "List bookmarks")
-    "b m" '(bookmark-set :wk "Set bookmark"))
-
-  ;; quality of life keybindings
-  (w8ste/leader-keys
-    "TAB TAB" '(comment-line :wk "Comment lines"))
-
-  (w8ste/leader-keys
-    "f" '(:ignore t :wk "Find commands")
-    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
-    "f r" '(counsel-recentf :wk "Find recent files")
-    "f p" '(flycheck-list-errors :wk "Find errors"))
-
-  ;; navigating through you 
-  (w8ste/leader-keys
-    "p" '(:ignore :wk "Navigation")'
-    "p r" '(counsel-recentf :wk "Find recent files")
-    "p f" '(projectile-find-file :wk "Find file in current project")
-    "p =" '(perspective-map :wk "Perspective")
-    "p e" '(goto-next-locus :wk "Goto next error")
-    "p s" '(rgrep :wk "Find regex"))
-
-  ;; eval keybindings
-  (w8ste/leader-keys
-    "e" '(:ignore t :wk "Evaluate/Eshell")    
-    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
-    "e d" '(eval-defun :wk "Evaluate defun containing or after point")
-    "e e" '(eval-expression :wk "Evaluate and elisp expression")
-    "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
-    "e r" '(eval-region :wk "Evaluate elisp in region")
-    "es" '(eshell :wk "Eshell")
-    "eh" '(counsel-esh-history :wk "Eshell history"))
-
-  ;; Dired
-  (w8ste/leader-keys
-    "d" '(:ignore t :wk "Dired")
-    "d d" '(dired :wk "Open dired")
-    "d j" '(dired-jump :wk "Dired jump to current")
-    "d n" '(neotree-dir :wk "Open directory in neotree")
-    "d p" '(peep-dired :wk "Peep-dired")) 
-
-  ;; Help keybindigs
-  (w8ste/leader-keys
-    "h" '(:ignore t :wk "Help")
-    "h a" '(counsel-apropos :wk "Apropos")
-    "h b" '(describe-bindings :wk "Describe bindings")
-    "h c" '(describe-char :wk "Describe character under cursor")
-    "h d" '(:ignore t :wk "Emacs documentation")
-    "h d a" '(about-emacs :wk "About Emacs")
-    "h d d" '(view-emacs-debugging :wk "View Emacs debugging")
-    "h d f" '(view-emacs-FAQ :wk "View Emacs FAQ")
-    "h d m" '(info-emacs-manual :wk "The Emacs manual")
-    "h d n" '(view-emacs-news :wk "View Emacs news")
-    "h d o" '(describe-distribution :wk "How to obtain Emacs")
-    "h d p" '(view-emacs-problems :wk "View Emacs problems")
-    "h d t" '(view-emacs-todo :wk "View Emacs todo")
-    "h d w" '(describe-no-warranty :wk "Describe no warranty")
-    "h e" '(view-echo-area-messages :wk "View echo area messages")
-    "h f" '(describe-function :wk "Describe function")
-    "h F" '(describe-face :wk "Describe face")
-    "h g" '(describe-gnu-project :wk "Describe GNU Project")
-    "h i" '(info :wk "Info")
-    "h I" '(describe-input-method :wk "Describe input method")
-    "h k" '(describe-key :wk "Describe key")
-    "h l" '(view-lossage :wk "Display recent keystrokes and the commands run")
-    "h L" '(describe-language-environment :wk "Describe language environment")
-    "h m" '(describe-mode :wk "Describe mode")
-    "h n" '(hackernews :wk "Hackernews")
-    "h r" '(:ignore t :wk "Reload")
-    "h r r" '((lambda () (interactive)
-                (load-file "~/.config/emacs/init.el")
-                (ignore (elpaca-process-queues)))
-              :wk "Reload emacs config")
-    "h t" '(load-theme :wk "Load theme")
-    "h v" '(describe-variable :wk "Describe variable")
-    "h w" '(where-is :wk "Prints keybinding for command if set")
-    "h x" '(describe-command :wk "Display full documentation for command"))
-
-  ;; Keybindings for splits
-  (w8ste/leader-keys
-    "w" '(:ignore t :wk "Windows")
-    ;; Window splits
-    "w c" '(evil-window-delete :wk "Close window")
-    "w n" '(evil-window-new :wk "New window")
-    "w s" '(evil-window-split :wk "Horizontal split window")
-    "w v" '(evil-window-vsplit :wk "Vertical split window")
-    ;; Window motions
-    "w h" '(evil-window-left :wk "Window left")
-    "w j" '(evil-window-down :wk "Window down")
-    "w k" '(evil-window-up :wk "Window up")
-    "w l" '(evil-window-right :wk "Window right")
-    "w w" '(evil-window-next :wk "Goto next window")
-    ;; Move Windows
-    "w H" '(buf-move-left :wk "Buffer move left")
-    "w J" '(buf-move-down :wk "Buffer move down")
-    "w K" '(buf-move-up :wk "Buffer move up")
-    "w L" '(buf-move-right :wk "Buffer move right"))
-
-  (w8ste/leader-keys
-    "o" '(:ignore t :wk "Org")
-    "o a" '(org-agenda :wk "Org agenda")
-    "o e" '(org-export-dispatch :wk "Org export dispatch")
-    "o i" '(org-toggle-item :wk "Org toggle item")
-    "o t" '(org-todo :wk "Org todo")
-    "o l" '(hl-todo-occur :wk "Find all todo's in file")
-    "o B" '(org-babel-tangle :wk "Org babel tangle")
-    "o T" '(org-todo-list :wk "Org todo list"))
-
-  (w8ste/leader-keys
-    "o d" '(:ignore t :wk "Date/deadline")
-    "o d t" '(org-time-stamp :wk "Org time stamp"))
-
-  (w8ste/leader-keys
-    "o b" '(:ignore t :wk "Tables")
-    "o b -" '(org-table-insert-hline :wk "Insert hline in table")
-    )
-
-  (w8ste/leader-keys
-    "s" '(:ignore t :wk "sbt")
-    "s s" '(sbt-start :wk "sbt start"))
-
-  (w8ste/leader-keys
-    "m" '(:ignore t :wk "Minimap/Magit")
-    "m m" '(minimap-mode :wk "Minimap")
-    "m g" '(magit :wk "Magit"))
-
-  (w8ste/leader-keys
-    "t" '(:ignore t :wk "Toggle")
-    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
-    "t t" '(visual-line-mode :wk "Toggle truncated lines")
-    "t r" '(rainbow-mode :wk "Toggle rainbow mode")
-    "t d" '(tldr :wk "TLDR")
-    "t v" '(vterm-toggle :wk "Toggle vterm"))
-
-  ;; NeoTree
-  (w8ste/leader-keys
-    "n" '(:ignore t :wk "Neotree")
-    "nt" '(neotree-toggle :wk "Toggle Neotree")
-    "nc" '(neotree-create-node :wk "Create File")
-    "nd" '(neotree-delete-node :wk "Delete File"))
-  )
-;; Setting RETURN key in org-mode to follow links
-(setq org-return-follows-link  t)
-
 ;; Disable backup files.
-(setf make-backup-files nil)
+(setq make-backup-files nil)
 ;; Prompt to delete autosaves when killing buffers.
-(setf kill-buffer-delete-auto-save-files t)
+(setq kill-buffer-delete-auto-save-files t)
 
 (global-visual-line-mode 0)
 (toggle-truncate-lines 0)
+(setq inhibit-splash-screen t)
 
 (use-package all-the-icons
   :ensure t
@@ -243,7 +51,7 @@
 (push (list 'output-pdf "Zathura")
 TeX-view-program-selection)))))
 
-	 (setq TeX-view-program-selection '((output-pdf "Zathura"))
+	   (setq TeX-view-program-selection '((output-pdf "Zathura"))
     TeX-source-correlate-start-server t)
 
 (use-package smartparens
@@ -319,28 +127,8 @@ one, an error is signaled."
       (set-window-buffer other-win buf-this-buf)
       (select-window other-win))))
 
-(use-package dashboard
-  :ensure t 
-  :init
-  (setq initial-buffer-choice 'dashboard-open)
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
-  ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
-  (setq dashboard-startup-banner "~/.config/emacs/images/emacs-dash.png")  ;; use custom image as banner
-  (setq dashboard-center-content t) ;; set to 't' for centered content
-  (setq dashboard-items '((recents . 5)
-                          (agenda . 5 )
-                          (bookmarks . 3)
-                          (projects . 3)
-                          (registers . 3)))
-  :custom
-  (dashboard-modify-heading-icons '((recents . "file-text")
-                                    (bookmarks . "book")))
-  :config
-  (dashboard-setup-startup-hook))
-
 (use-package diminish)
+(diminish 'projectile-mode)
 
 (use-package dired-open
   :config
@@ -359,10 +147,6 @@ one, an error is signaled."
   (evil-define-key 'normal peep-dired-mode-map (kbd "j") 'peep-dired-next-file)
   (evil-define-key 'normal peep-dired-mode-map (kbd "k") 'peep-dired-prev-file)
   )
-
-(use-package elcord
-  :init
-  (elcord-mode))
 
 (set-frame-font "JetBrains Mono Medium 19")
 (set-face-attribute 'default nil
@@ -486,14 +270,14 @@ one, an error is signaled."
     :bind (("C-s" . swiper)
            :map ivy-minibuffer-map
            ("C-l" . ivy-alt-done)
-           ("C-j" . ivy-next-line)
-           ("C-k" . ivy-previous-line)
+           ("C-n" . ivy-next-line)
+           ("C-p" . ivy-previous-line)
            :map ivy-switch-buffer-map
-           ("C-k" . ivy-previous-line)
+           ("C-p" . ivy-previous-line)
            ("C-l" . ivy-done)
            ("C-d" . ivy-switch-buffer-kill)
            :map ivy-reverse-i-search-map
-           ("C-k" . ivy-previous-line)
+           ("C-p" . ivy-previous-line)
            ("C-d" . ivy-reverse-i-search-kill))
     :config
     (ivy-mode 1))
@@ -524,57 +308,56 @@ one, an error is signaled."
   (ivy-prescient-mode 1))
 
 (use-package lsp-mode
+  :ensure t
   :commands (lsp lsp-deferred)
   :init
-  (setq lsp-keymap-prefix "C-c l")
-  (setq lsp-modeline-diagnostics-enable nil)
-  :hook (lsp-after-apply-edits-hook t
-       ;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-              (LaTeX-mode . lsp-deferred)
-              ;; if you want which-key integration
-              (lsp-mode . lsp-enable-which-key-integration))
+  (setq lsp-keymap-prefix "C-c l"
+        lsp-modeline-diagnostics-enable nil)
+  :hook ((LaTeX-mode . lsp-deferred)
+         (lsp-mode . lsp-enable-which-key-integration)
+         (c++-mode . lsp)
+         (java-mode . lsp)
+         (sh-mode . lsp)
+         (tex-mode . lsp))
   :custom
   (lsp-rust-analyzer-cargo-watch-command "clippy")
   (lsp-eldoc-render-all t)
   (lsp-idle-delay 0.6)
-  ;; enable / disable the hints as you prefer:
   (lsp-inlay-hint-enable t)
-  ;; These are optional configurations. See https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/#lsp-rust-analyzer-display-chaining-hints for a full list
-  (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-  (lsp-rust-analyzer-display-chaining-hints t)
-  (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
-  (lsp-rust-analyzer-display-closure-return-type-hints t)
-  (lsp-rust-analyzer-display-parameter-hints nil)
-  (lsp-rust-analyzer-display-reborrow-hints nil)
+  (lsp-log-io t)
+  (lsp-diagnostics-provider :flycheck) ;; Explicitly use Flycheck
   :config
-  (add-hook 'c++-mode-hook 'lsp)
-  (add-hook 'java-mode-hook 'lsp)
-  (add-hook 'sh-mode-hook 'lsp)
-  (add-hook 'tex-mode-hook 'lsp)
-  ;; (lsp-enable-whichkey-integration t)
-  (lsp))
+  (setq lsp-rust-analyzer-display-lifetime-elision-hints-enable t
+        lsp-rust-analyzer-display-chaining-hints t
+        lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil
+        lsp-rust-analyzer-display-closure-return-type-hints t
+        lsp-rust-analyzer-display-parameter-hints nil
+        lsp-rust-analyzer-display-reborrow-hints nil))
 
+(use-package lsp-latex
+  :ensure t
+  :hook (bibtex-mode . lsp))
 
+(use-package lsp-ui
+  :ensure t
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
 
-     (use-package lsp-latex
-       ;; this uses texlab
-       :ensure t
-       :config
-       (progn
-         (add-hook 'bibtex-mode-hook 'lsp)
-         )
-       )
+(use-package lsp-treemacs
+  :ensure t
+  :after lsp)
 
-  (use-package lsp-ui
-    :hook (lsp-mode . lsp-ui-mode)
-    :custom
-    (lsp-ui-doc-position 'bottom))
+(use-package lsp-ivy
+  :ensure t
+  :after lsp)
 
-  (use-package lsp-treemacs
-    :after lsp)
-
-  (use-package lsp-ivy
-    :after lsp)
+(use-package lsp-pyright
+:ensure t
+:after lsp-mode
+:hook (python-mode . (lambda ()
+                       (require 'lsp-pyright)
+                       (lsp-deferred))))  ;; or just (lsp) if you prefer
 
 (use-package company
   :after lsp-mode
@@ -603,9 +386,6 @@ one, an error is signaled."
   ;; Set up Node debugging
   (require 'dap-node)
   (dap-node-setup)) ;; Automatically installs Node debug adapter if needed
-
-(use-package lsp-treemacs
-  :after lsp)
 
 (use-package lsp-java
   :hook (java-mode . lsp-deferred))
@@ -692,32 +472,6 @@ one, an error is signaled."
 
 (global-set-key [escape] 'keyboard-escape-quit)
 
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1)
-  :config
-  (setq doom-modeline-height 35      ;; sets modeline height
-        doom-modeline-bar-width 5    ;; sets right bar width
-        doom-modeline-persp-name t   ;; adds perspective name to modeline
-        doom-modeline-persp-icon t)) ;; adds folder icon next to persp name
-
-(use-package neotree
-  :config
-  (setq neo-smart-open t
-        neo-show-hidden-files t
-        neo-window-width 37
-        neo-window-fixed-size nil
-        inhibit-compacting-font-caches t
-        projectile-switch-project-action 'neotree-projectile-action) 
-  ;; truncate long file names in neotree
-  (add-hook 'neo-after-create-hook
-            #'(lambda (_)
-                (with-current-buffer (get-buffer neo-buffer-name)
-                  (setq truncate-lines t)
-                  (setq word-wrap nil)
-                  (make-local-variable 'auto-hscroll-mode)
-                  (setq auto-hscroll-mode nil)))))
-
 (use-package toc-org
   :commands toc-org-enable
   :init (add-hook 'org-mode-hook 'toc-org-enable)
@@ -771,39 +525,6 @@ one, an error is signaled."
   :hook 
   ((org-mode prog-mode) . rainbow-mode))
 
-(require 'package)
-(setq package-archives '(("melpa" . "http://melpa.org/packages/")
-                         ("gnu" . "http://elpa.gnu.org/packages/")))
-(use-package rustic
-  :ensure
-  :bind (:map rustic-mode-map
-              ("SPC-r-j" . lsp-ui-imenu)
-              ("SPC-r-?" . lsp-find-references)
-              ("SPC-r-l" . flycheck-list-errors)
-              ("SPC-r-a" . lsp-execute-code-action)
-              ("SPC-r-r" . lsp-rename)
-              ("SPC-r-q" . lsp-workspace-restart)
-              ("SPC-r-q" . lsp-workspace-shutdown)
-              ("SPC-r-s" . lsp-rust-analyzer-status))
-  :config
-  ;; uncomment for less flashiness
-  ;; (setq lsp-eldoc-hook nil)
-  ;; (setq lsp-enable-symbol-highlighting nil)
-  ;; (setq lsp-signature-auto-activate nil)
-
-  ;; comment to disable rustfmt on save
-  (setq rustic-format-on-save t)
-  (add-hook 'rustic-mode-hook 'rk/rustic-mode-hook))
-
-(defun rk/rustic-mode-hook ()
-  ;; so that run c-c c-c c-r works without having to confirm, but don't try to
-  ;; save rust buffers that are not file visiting. once
-  ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
-  ;; no longer be necessary.
-  (when buffer-file-name
-    (setq-local buffer-save-without-query t))
-  (add-hook 'before-save-hook 'lsp-format-buffer nil t))
-
 (use-package eshell-syntax-highlighting
   :after esh-mode
   :config
@@ -826,31 +547,6 @@ one, an error is signaled."
   :config
   (setq shell-file-name "/bin/fish"
         vterm-max-scrollback 5000))
-
-(use-package vterm-toggle
-  :after vterm
-  :config
-  (setq vterm-toggle-fullscreen-p nil)
-  (setq vterm-toggle-scope 'project)
-  (add-to-list 'display-buffer-alist
-               '((lambda (buffer-or-name _)
-                   (let ((buffer (get-buffer buffer-or-name)))
-                     (with-current-buffer buffer
-                       (or (equal major-mode 'vterm-mode)
-                           (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
-                 (display-buffer-reuse-window display-buffer-at-bottom)
-                 ;;(display-buffer-reuse-window display-buffer-in-direction)
-                 ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-                 ;;(direction . bottom)
-                 ;;(dedicated . t) ;dedicated is supported in emacs27
-                 (reusable-frames . visible)
-                 (window-height . 0.3))))
-
-(use-package sudo-edit
-  :config
-  (w8ste/leader-keys
-    "fu" '(sudo-edit-find-file :wk "Sudo find file")
-    "fU" '(sudo-edit :wk "Sudo edit file")))
 
 (use-package doom-themes
   :ensure t
