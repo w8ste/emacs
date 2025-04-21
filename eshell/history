@@ -348,8 +348,8 @@ ls
 cd ../eiki/
 ls
 mkdir img
-exit
 rustc main.rs 
 ls
 ./main
 exit
+cargo --versionrustc --version

@@ -27,13 +27,18 @@
 (setq use-package-always-ensure t)
 
 ;; Disable backup files.
-(setq make-backup-files nil)
-;; Prompt to delete autosaves when killing buffers.
-(setq kill-buffer-delete-auto-save-files t)
+    (setq make-backup-files nil)
+    ;; Prompt to delete autosaves when killing buffers.
+    (setq kill-buffer-delete-auto-save-files t)
 
-(global-visual-line-mode 0)
-(toggle-truncate-lines 0)
-(setq inhibit-splash-screen t)
+    (global-visual-line-mode 0)
+    (toggle-truncate-lines 0)
+    (setq inhibit-splash-screen t)
+;(setq warning-minimum-level :error)  ; Only show errors, not warnings
+;(setq warning-suppress-types '((comp)))  ; Suppress all compilation warnings
+
+(use-package diminish)
+(diminish 'projectile-mode)
 
 (use-package all-the-icons
   :ensure t
@@ -51,7 +56,7 @@
 (push (list 'output-pdf "Zathura")
 TeX-view-program-selection)))))
 
-	   (setq TeX-view-program-selection '((output-pdf "Zathura"))
+	 (setq TeX-view-program-selection '((output-pdf "Zathura"))
     TeX-source-correlate-start-server t)
 
 (use-package smartparens
@@ -127,9 +132,6 @@ one, an error is signaled."
       (set-window-buffer other-win buf-this-buf)
       (select-window other-win))))
 
-(use-package diminish)
-(diminish 'projectile-mode)
-
 (use-package dired-open
   :config
   (setq dired-open-extensions '(("gif" . "sxiv")
@@ -137,16 +139,6 @@ one, an error is signaled."
                                 ("png" . "sxiv")
                                 ("mkv" . "mpv")
                                 ("mp4" . "mpv"))))
-
-(use-package peep-dired
-  :after dired
-  :hook (evil-normalize-keymaps . peep-dired-hook)
-  :config
-  (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
-  (evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file) ; use dired-find-file instead if not using dired-open package
-  (evil-define-key 'normal peep-dired-mode-map (kbd "j") 'peep-dired-next-file)
-  (evil-define-key 'normal peep-dired-mode-map (kbd "k") 'peep-dired-prev-file)
-  )
 
 (set-frame-font "JetBrains Mono Medium 19")
 (set-face-attribute 'default nil
@@ -265,48 +257,6 @@ one, an error is signaled."
   :config
   (counsel-mode 1))
 
-  (use-package ivy
-    :diminish
-    :bind (("C-s" . swiper)
-           :map ivy-minibuffer-map
-           ("C-l" . ivy-alt-done)
-           ("C-n" . ivy-next-line)
-           ("C-p" . ivy-previous-line)
-           :map ivy-switch-buffer-map
-           ("C-p" . ivy-previous-line)
-           ("C-l" . ivy-done)
-           ("C-d" . ivy-switch-buffer-kill)
-           :map ivy-reverse-i-search-map
-           ("C-p" . ivy-previous-line)
-           ("C-d" . ivy-reverse-i-search-kill))
-    :config
-    (ivy-mode 1))
-
-    (use-package all-the-icons-ivy-rich
-      :ensure t
-      :init (all-the-icons-ivy-rich-mode 1))
-
-    (use-package ivy-rich
-      :after ivy
-      :ensure t
-      :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
-      :custom
-      (ivy-virtual-abbreviate 'full
-                              ivy-rich-switch-buffer-align-virtual-buffer t
-                              ivy-rich-path-style 'abbrev)
-      :config
-      (ivy-set-display-transformer 'ivy-switch-buffer
-                                   'ivy-rich-switch-buffer-transformer))
-
-  (use-package ivy-prescient
-  :after counsel
-  :custom
-  (ivy-prescient-enable-filtering nil)
-  :config
-  ;; Uncomment the following line to have sorting remembered across sessions!
-  ;(prescient-persist-mode 1)
-  (ivy-prescient-mode 1))
-
 (use-package lsp-mode
   :ensure t
   :commands (lsp lsp-deferred)
@@ -315,7 +265,8 @@ one, an error is signaled."
         lsp-modeline-diagnostics-enable nil)
   :hook ((LaTeX-mode . lsp-deferred)
          (lsp-mode . lsp-enable-which-key-integration)
-         (c++-mode . lsp)
+         (julia-mode . lsp)
+         (C++-mode . lsp)
          (java-mode . lsp)
          (sh-mode . lsp)
          (tex-mode . lsp))
@@ -359,6 +310,8 @@ one, an error is signaled."
                        (require 'lsp-pyright)
                        (lsp-deferred))))  ;; or just (lsp) if you prefer
 
+        (require 'package)
+
 (use-package company
   :after lsp-mode
   :hook (lsp-mode . company-mode)
@@ -401,15 +354,10 @@ one, an error is signaled."
   :config
   (require 'dap-python))
 
-(use-package auto-virtualenv
-:ensure t
-:init
-(use-package pyvenv
-  :ensure t)
-:config
-(add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
-(add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)  ;; If using projectile
-)
+(use-package lsp-julia
+       :after lsp-mode
+        :config
+(setq lsp-julia-default-environment "~/.julia/environments/v1.11"))
 
 (use-package verilog-mode
   :ensure t
@@ -473,6 +421,7 @@ one, an error is signaled."
 (global-set-key [escape] 'keyboard-escape-quit)
 
 (use-package toc-org
+  :diminish
   :commands toc-org-enable
   :init (add-hook 'org-mode-hook 'toc-org-enable)
   (setq org-agenda-start-on-weekday 1))
@@ -510,12 +459,6 @@ one, an error is signaled."
 ;; Automatically save perspective states to file when Emacs exits.
 (add-hook 'kill-emacs-hook #'persp-state-save)
 
-(use-package projectile
-  :diminish
-  :config
-  (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
-
 (use-package rainbow-delimiters
   :hook ((emacs-lisp-mode . rainbow-delimiters-mode)
          (clojure-mode . rainbow-delimiters-mode)))
@@ -543,11 +486,6 @@ one, an error is signaled."
       eshell-destroy-buffer-when-process-dies t
       eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
 
-(use-package vterm
-  :config
-  (setq shell-file-name "/bin/fish"
-        vterm-max-scrollback 5000))
-
 (use-package doom-themes
   :ensure t
   :config
@@ -566,15 +504,13 @@ one, an error is signaled."
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
-(use-package tldr)
-
-(add-to-list 'default-frame-alist '(alpha-background . 90))
-
 (use-package tree-sitter
-  :init
+      :diminish
+      :init
   (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-(use-package tree-sitter-langs)
+(use-package tree-sitter-langs
+    :diminish)
 
 (use-package which-key
   :init

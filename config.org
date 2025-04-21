@@ -1,4 +1,4 @@
-#+TITLE: w8stes's GNU Emacs Config
++TITLE: w8stes's GNU Emacs Config
 #+AUTHOR: w8ste
 #+STARTUP: showerverything
 #+OPTIONS: toc:2
@@ -7,11 +7,11 @@
   - [[#startup-performance][Startup Performance]]
   - [[#package-system][Package System]]
   - [[#general-settings][General settings]]
+- [[#diminish][Diminish]]
 - [[#all-the-icons][All the icons]]
 - [[#auctex][AUCTex]]
 - [[#autopair][Autopair]]
 - [[#buffer-move][Buffer-Move]]
-- [[#diminish][Diminish]]
 - [[#dired][Dired]]
 - [[#fonts][FONTS]]
   - [[#settings-the-font-face][Settings The Font Face]]
@@ -32,25 +32,21 @@
   - [[#dap-mode][Dap Mode]]
   - [[#java][Java]]
   - [[#python][Python]]
+  - [[#julia][Julia]]
   - [[#system-verilog][System Verilog]]
   - [[#c][C++]]
   - [[#ltex][ltex]]
   - [[#scala][Scala]]
 - [[#minibuffer-escape][Minibuffer Escape]]
-- [[#modeline][Modeline]]
   - [[#enable-toc][Enable ToC]]
   - [[#enable-bullet-points][Enable bullet points]]
   - [[#disable-electric-indent][Disable electric indent]]
 - [[#pdf-tool][PDF-Tool]]
 - [[#perspective][Perspective]]
-- [[#projectile][Projectile]]
 - [[#rainbow-delimiters][Rainbow Delimiters]]
 - [[#rainbow-mode][Rainbow Mode]]
   - [[#eshell][Eshell]]
-  - [[#vterm][Vterm]]
 - [[#theme][Theme]]
-- [[#tldr][TLDR]]
-- [[#transparency][Transparency]]
 - [[#treesitter][Treesitter]]
 - [[#which-key][WHICH-KEY]]
 - [[#yasnippet][Yasnippet]]
@@ -100,7 +96,18 @@
     (global-visual-line-mode 0)
     (toggle-truncate-lines 0)
     (setq inhibit-splash-screen t)
+;(setq warning-minimum-level :error)  ; Only show errors, not warnings
+;(setq warning-suppress-types '((comp)))  ; Suppress all compilation warnings
+
 #+end_src
+* Diminish
+Option that implements hiding of minor-modes in the modeline
+#+begin_src emacs-lisp
+    (use-package diminish)
+    (diminish 'projectile-mode)
+#+end_src 
+
+
 
 * All the icons
 #+begin_src emacs-lisp
@@ -114,7 +121,6 @@
 
 * AUCTex
 #+begin_src emacs-lisp
-
   (use-package auctex
   :mode
   ("\\.tex\\'" . tex-mode)
@@ -210,12 +216,7 @@
         (select-window other-win)))) 
 #+end_src
 
-* Diminish
-Option that implements hiding of minor-modes in the modeline
-#+begin_src emacs-lisp
-  (use-package diminish)
-  (diminish 'projectile-mode)
-#+end_src 
+
 * Dired
 #+begin_src emacs-lisp
   (use-package dired-open
@@ -225,16 +226,6 @@ Option that implements hiding of minor-modes in the modeline
                                   ("png" . "sxiv")
                                   ("mkv" . "mpv")
                                   ("mp4" . "mpv"))))
-
-  (use-package peep-dired
-    :after dired
-    :hook (evil-normalize-keymaps . peep-dired-hook)
-    :config
-    (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
-    (evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file) ; use dired-find-file instead if not using dired-open package
-    (evil-define-key 'normal peep-dired-mode-map (kbd "j") 'peep-dired-next-file)
-    (evil-define-key 'normal peep-dired-mode-map (kbd "k") 'peep-dired-prev-file)
-    )
 #+end_src
 
 
@@ -273,15 +264,15 @@ Option that implements hiding of minor-modes in the modeline
 
 * Flycheck
 #+begin_src emacs-lisp
-  (use-package flycheck
-    :ensure t
-    :defer t
-    :diminish
-    :init
-    (add-hook 'c++-mode-hook
-              (lambda () (setq flycheck-clang-language-standard "c++17"))) 
-    (setq flycheck-clang-language-standard "c++17")
-    (global-flycheck-mode)) 
+    (use-package flycheck
+      :ensure t
+      :defer t
+      :diminish
+      :init
+      (add-hook 'c++-mode-hook
+                (lambda () (setq flycheck-clang-language-standard "c++17"))) 
+      (setq flycheck-clang-language-standard "c++17")
+      (global-flycheck-mode)) 
 #+end_src
 
 * Git Programms
@@ -387,62 +378,11 @@ Option that implements hiding of minor-modes in the modeline
   :config
   (counsel-mode 1))
 
-  (use-package ivy
-    :diminish
-    :bind (("C-s" . swiper)
-           :map ivy-minibuffer-map
-           ("C-l" . ivy-alt-done)
-           ("C-n" . ivy-next-line)
-           ("C-p" . ivy-previous-line)
-           :map ivy-switch-buffer-map
-           ("C-p" . ivy-previous-line)
-           ("C-l" . ivy-done)
-           ("C-d" . ivy-switch-buffer-kill)
-           :map ivy-reverse-i-search-map
-           ("C-p" . ivy-previous-line)
-           ("C-d" . ivy-reverse-i-search-kill))
-    :config
-    (ivy-mode 1))
 
-    (use-package all-the-icons-ivy-rich
-      :ensure t
-      :init (all-the-icons-ivy-rich-mode 1))
-
-    (use-package ivy-rich
-      :after ivy
-      :ensure t
-      :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
-      :custom
-      (ivy-virtual-abbreviate 'full
-                              ivy-rich-switch-buffer-align-virtual-buffer t
-                              ivy-rich-path-style 'abbrev)
-      :config
-      (ivy-set-display-transformer 'ivy-switch-buffer
-                                   'ivy-rich-switch-buffer-transformer))
-
-  (use-package ivy-prescient
-  :after counsel
-  :custom
-  (ivy-prescient-enable-filtering nil)
-  :config
-  ;; Uncomment the following line to have sorting remembered across sessions!
-  ;(prescient-persist-mode 1)
-  (ivy-prescient-mode 1))
 #+end_src
 
 * Language Support
 ** Lsp mode
-
-  (use-package lsp-mode
-         :init
-         ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-         (setq lsp-keymap-prefix "C-c l")
-         ;;(setq lsp-modeline-diagnostics-enable nil)
-         :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-                (LaTeX-mode . lsp-deferred)
-                ;; if you want which-key integration
-                (lsp-mode . lsp-enable-which-key-integration))
-         :commands (lsp lsp-deferred))
 
 #+begin_src emacs-lisp
   (use-package lsp-mode
@@ -453,7 +393,8 @@ Option that implements hiding of minor-modes in the modeline
           lsp-modeline-diagnostics-enable nil)
     :hook ((LaTeX-mode . lsp-deferred)
            (lsp-mode . lsp-enable-which-key-integration)
-           (c++-mode . lsp)
+           (julia-mode . lsp)
+           (C++-mode . lsp)
            (java-mode . lsp)
            (sh-mode . lsp)
            (tex-mode . lsp))
@@ -496,6 +437,8 @@ Option that implements hiding of minor-modes in the modeline
   :hook (python-mode . (lambda ()
                          (require 'lsp-pyright)
                          (lsp-deferred))))  ;; or just (lsp) if you prefer
+
+          (require 'package)
 
 
 #+end_src
@@ -556,17 +499,14 @@ Option that implements hiding of minor-modes in the modeline
   (require 'dap-python))
 #+end_src
 
-Create the virtualenv in yout Project Folder called "venv"
+** Julia
 #+begin_src emacs-lisp
-  (use-package auto-virtualenv
-  :ensure t
-  :init
-  (use-package pyvenv
-    :ensure t)
-  :config
-  (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
-  (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)  ;; If using projectile
-  )
+  (use-package lsp-julia
+         :after lsp-mode
+          :config
+  (setq lsp-julia-default-environment "~/.julia/environments/v1.11"))
+
+
 #+end_src
 
 
@@ -577,7 +517,6 @@ Create the virtualenv in yout Project Folder called "venv"
     :hook (verilog-mode . (lambda ()
                             (require 'verilog-mode)
                             (lsp))))
-
 #+end_src
 
 ** C++
@@ -654,21 +593,10 @@ Create the virtualenv in yout Project Folder called "venv"
   (global-set-key [escape] 'keyboard-escape-quit) 
 #+end_src
 
-* Modeline
-+begin_src emacs-lisp
-  (use-package doom-modeline
-    :ensure t
-    :init (doom-modeline-mode 1)
-    :config
-    (setq doom-modeline-height 35      ;; sets modeline height
-          doom-modeline-bar-width 5    ;; sets right bar width
-          doom-modeline-persp-name t   ;; adds perspective name to modeline
-          doom-modeline-persp-icon t)) ;; adds folder icon next to persp name
-+end_src
-
 ** Enable ToC
 #+begin_src emacs-lisp
   (use-package toc-org
+    :diminish
     :commands toc-org-enable
     :init (add-hook 'org-mode-hook 'toc-org-enable)
     (setq org-agenda-start-on-weekday 1))
@@ -723,15 +651,6 @@ Create the virtualenv in yout Project Folder called "venv"
   (add-hook 'kill-emacs-hook #'persp-state-save)
 #+end_src
 
-* Projectile
-Projectile is a project interaction library for Emacs.
-#+begin_src emacs-lisp
-  (use-package projectile
-    :diminish
-    :config
-    (projectile-mode +1)
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)) 
-#+end_src
 
 * Rainbow Delimiters
 #+begin_src emacs-lisp
@@ -770,14 +689,6 @@ Shell written in emacs-lisp
         eshell-destroy-buffer-when-process-dies t
         eshell-visual-commands'("bash" "fish" "htop" "ssh" "top" "zsh"))
 #+end_src
-** Vterm
-Terminal emulator in emacs
-#+begin_src emacs-lisp
-  (use-package vterm
-    :config
-    (setq shell-file-name "/bin/fish"
-          vterm-max-scrollback 5000))
-#+end_src
 
 * Theme
 #+begin_src emacs-lisp
@@ -800,23 +711,16 @@ Terminal emulator in emacs
     (doom-themes-org-config))
 #+end_src
 
-* TLDR
-#+begin_src emacs-lisp
-  (use-package tldr)
-#+end_src
-
-* Transparency
-#+begin_src emacs-lisp
-  (add-to-list 'default-frame-alist '(alpha-background . 90))
-#+end_src
 
 * Treesitter
 #+begin_src emacs-lisp
-  (use-package tree-sitter
-    :init
-    (global-tree-sitter-mode)
-    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-  (use-package tree-sitter-langs)
+      (use-package tree-sitter
+            :diminish
+            :init
+        (global-tree-sitter-mode)
+        (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+      (use-package tree-sitter-langs
+          :diminish)
 #+end_src
 
 * WHICH-KEY
