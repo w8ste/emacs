@@ -121,17 +121,21 @@ Option that implements hiding of minor-modes in the modeline
 
 * AUCTex
 #+begin_src emacs-lisp
-  (use-package auctex
-  :mode
-  ("\\.tex\\'" . tex-mode)
-  :hook
-  ((tex-mode . lsp-deferred)
-  (tex-mode . (lambda ()
-  (push (list 'output-pdf "Zathura")
-  TeX-view-program-selection)))))
+    (use-package auctex
+    :mode
+    ("\\.tex\\'" . tex-mode)
+    :hook
+    ((tex-mode . lsp-deferred)
+    (tex-mode . (lambda ()
+    (push (list 'output-pdf "Zathura")
+    TeX-view-program-selection)))))
 
-	   (setq TeX-view-program-selection '((output-pdf "Zathura"))
-      TeX-source-correlate-start-server t)
+             (setq TeX-view-program-selection '((output-pdf "Zathura"))
+        TeX-source-correlate-start-server t)
+
+     (setenv "PATH" (concat "/usr/local/texlive/2025/bin/x86_64-linux:" (getenv "PATH")))
+     (add-to-list 'exec-path "/usr/local/texlive/2025/bin/x86_64-linux")
+
 #+end_src
 
 

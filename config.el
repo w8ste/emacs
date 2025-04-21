@@ -56,8 +56,11 @@
 (push (list 'output-pdf "Zathura")
 TeX-view-program-selection)))))
 
-	 (setq TeX-view-program-selection '((output-pdf "Zathura"))
+         (setq TeX-view-program-selection '((output-pdf "Zathura"))
     TeX-source-correlate-start-server t)
+
+ (setenv "PATH" (concat "/usr/local/texlive/2025/bin/x86_64-linux:" (getenv "PATH")))
+ (add-to-list 'exec-path "/usr/local/texlive/2025/bin/x86_64-linux")
 
 (use-package smartparens
   :init
