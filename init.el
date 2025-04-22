@@ -16,7 +16,8 @@
  '(ignored-local-variable-values '((TeX-master . t)))
  '(lsp-clangd-version "16.0.2")
  '(package-selected-packages
-   '(yasnippet which-key vterm tree-sitter-langs toc-org tldr smartparens sbt-mode rustic rainbow-mode rainbow-delimiters pyvenv python-mode projectile perspective peep-dired pdf-tools org-bullets magit lsp-ui lsp-pyright lsp-metals lsp-latex lsp-java lsp-ivy ivy-prescient hl-todo highlight-indent-guides gradle-mode general flycheck evil-collection eshell-syntax-highlighting elcord doom-themes dired-open diminish dashboard counsel company-box ccls auto-virtualenv auctex all-the-icons-ivy-rich all-the-icons-dired)))
+   '(yasnippet which-key vterm tree-sitter-langs toc-org tldr smartparens sbt-mode rustic rainbow-mode rainbow-delimiters pyvenv python-mode projectile perspective peep-dired pdf-tools org-bullets magit lsp-ui lsp-pyright lsp-metals lsp-latex lsp-java lsp-ivy ivy-prescient hl-todo highlight-indent-guides gradle-mode general flycheck evil-collection eshell-syntax-highlighting elcord doom-themes dired-open diminish dashboard counsel company-box ccls auto-virtualenv auctex all-the-icons-ivy-rich all-the-icons-dired))
+ '(tab-width 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

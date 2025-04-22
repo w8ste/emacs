@@ -1,4 +1,4 @@
-+TITLE: w8stes's GNU Emacs Config
+- +TITLE: w8stes's GNU Emacs Config
 #+AUTHOR: w8ste
 #+STARTUP: showerverything
 #+OPTIONS: toc:2
@@ -7,11 +7,11 @@
   - [[#startup-performance][Startup Performance]]
   - [[#package-system][Package System]]
   - [[#general-settings][General settings]]
+  - [[#keybinds][Keybinds]]
 - [[#diminish][Diminish]]
 - [[#all-the-icons][All the icons]]
 - [[#auctex][AUCTex]]
 - [[#autopair][Autopair]]
-- [[#buffer-move][Buffer-Move]]
 - [[#dired][Dired]]
 - [[#fonts][FONTS]]
   - [[#settings-the-font-face][Settings The Font Face]]
@@ -35,6 +35,7 @@
   - [[#julia][Julia]]
   - [[#system-verilog][System Verilog]]
   - [[#c][C++]]
+  - [[#haskell][Haskell]]
   - [[#ltex][ltex]]
   - [[#scala][Scala]]
 - [[#minibuffer-escape][Minibuffer Escape]]
@@ -100,13 +101,29 @@
 ;(setq warning-suppress-types '((comp)))  ; Suppress all compilation warnings
 
 #+end_src
+
+** Keybinds
+#+begin_src emacs-lisp
+    ;; magit
+    (keymap-global-set "C-c g" 'magit)
+
+    ;; eshell
+    (keymap-global-set "C-c e" 'eshell)
+
+    ;; buffer
+  (which-key-add-key-based-replacements
+  "C-c b" "buffer")
+
+  (keymap-global-set "C-c b i" 'ibuffer)
+  (keymap-global-set "C-c b p" 'previous-buffer)
+  (keymap-global-set "C-c b n" 'next-buffer)
+  #+end_src
 * Diminish
 Option that implements hiding of minor-modes in the modeline
 #+begin_src emacs-lisp
     (use-package diminish)
     (diminish 'projectile-mode)
 #+end_src 
-
 
 
 * All the icons
@@ -117,29 +134,30 @@ Option that implements hiding of minor-modes in the modeline
 
   (use-package all-the-icons-dired
     :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+  (add-hook 'dired-mode-hook 'dired-omit-mode)
 #+end_src
 
 * AUCTex
+
+Latex LSP Server install: cargo install --locked --git https://github.com/latex-lsp/texlab.git
 #+begin_src emacs-lisp
-    (use-package auctex
-    :mode
-    ("\\.tex\\'" . tex-mode)
-    :hook
-    ((tex-mode . lsp-deferred)
-    (tex-mode . (lambda ()
-    (push (list 'output-pdf "Zathura")
-    TeX-view-program-selection)))))
+  (use-package auctex
+  :mode
+  ("\\.tex\\'" . tex-mode)
+  :hook
+  ((tex-mode . lsp-deferred)
+  (tex-mode . (lambda ()
+  (push (list 'output-pdf "Zathura")
+  TeX-view-program-selection)))))
 
-             (setq TeX-view-program-selection '((output-pdf "Zathura"))
-        TeX-source-correlate-start-server t)
+           (setq TeX-view-program-selection '((output-pdf "Zathura"))
+      TeX-source-correlate-start-server t)
 
-     (setenv "PATH" (concat "/usr/local/texlive/2025/bin/x86_64-linux:" (getenv "PATH")))
-     (add-to-list 'exec-path "/usr/local/texlive/2025/bin/x86_64-linux")
+  ;; Make sure this path matches the one installed via cargo
+   (setenv "PATH" (concat "/usr/local/texlive/2025/bin/x86_64-linux:" (getenv "PATH")))
+   (add-to-list 'exec-path "/usr/local/texlive/2025/bin/x86_64-linux")
 
 #+end_src
-
-
-
 
 * Autopair
 #+begin_src emacs-lisp
@@ -147,79 +165,6 @@ Option that implements hiding of minor-modes in the modeline
     :init
     (smartparens-global-mode))
 #+end_src
-
-* Buffer-Move
-#+begin_src emacs-lisp
-  (require 'windmove)
-
-  ;;;###autoload
-  (defun buf-move-up ()
-    "Swap the current buffer and the buffer above the split.
-  If there is no split, ie now window above the current one, an
-  error is signaled."
-    ;;  "Switches between the current buffer, and the buffer above the
-    ;;  split, if possible."
-    (interactive)
-    (let* ((other-win (windmove-find-other-window 'up))
-           (buf-this-buf (window-buffer (selected-window))))
-      (if (null other-win)
-          (error "No window above this one")
-        ;; swap top with this one
-        (set-window-buffer (selected-window) (window-buffer other-win))
-        ;; move this one to top
-        (set-window-buffer other-win buf-this-buf)
-        (select-window other-win))))
-
-  ;;;###autoload
-  (defun buf-move-down ()
-    "Swap the current buffer and the buffer under the split.
-  If there is no split, ie now window under the current one, an
-  error is signaled."
-    (interactive)
-    (let* ((other-win (windmove-find-other-window 'down))
-           (buf-this-buf (window-buffer (selected-window))))
-      (if (or (null other-win) 
-              (string-match "^ \\*Minibuf" (buffer-name (window-buffer other-win))))
-          (error "No window under this one")
-        ;; swap top with this one
-        (set-window-buffer (selected-window) (window-buffer other-win))
-        ;; move this one to top
-        (set-window-buffer other-win buf-this-buf)
-        (select-window other-win))))
-
-  ;;;###autoload
-  (defun buf-move-left ()
-    "Swap the current buffer and the buffer on the left of the split.
-  If there is no split, ie now window on the left of the current
-  one, an error is signaled."
-    (interactive)
-    (let* ((other-win (windmove-find-other-window 'left))
-           (buf-this-buf (window-buffer (selected-window))))
-      (if (null other-win)
-          (error "No left split")
-        ;; swap top with this one
-        (set-window-buffer (selected-window) (window-buffer other-win))
-        ;; move this one to top
-        (set-window-buffer other-win buf-this-buf)
-        (select-window other-win))))
-
-  ;;;###autoload
-  (defun buf-move-right ()
-    "Swap the current buffer and the buffer on the right of the split.
-  If there is no split, ie now window on the right of the current
-  one, an error is signaled."
-    (interactive)
-    (let* ((other-win (windmove-find-other-window 'right))
-           (buf-this-buf (window-buffer (selected-window))))
-      (if (null other-win)
-          (error "No right split")
-        ;; swap top with this one
-        (set-window-buffer (selected-window) (window-buffer other-win))
-        ;; move this one to top
-        (set-window-buffer other-win buf-this-buf)
-        (select-window other-win)))) 
-#+end_src
-
 
 * Dired
 #+begin_src emacs-lisp
@@ -281,6 +226,7 @@ Option that implements hiding of minor-modes in the modeline
 
 * Git Programms
 ** Magit
+The goat
 #+begin_src emacs-lisp
   (use-package magit
     :diminish)
@@ -336,39 +282,8 @@ Option that implements hiding of minor-modes in the modeline
 
 * Identation
 #+begin_src emacs-lisp
-; START TABS CONFIG
-;; Create a variable for our preferred tab width
-(setq custom-tab-width 4)
-
-;; Two callable functions for enabling/disabling tabs in Emacs
-(defun disable-tabs () (setq indent-tabs-mode nil))
-(defun enable-tabs  ()
-  (local-set-key (kbd "TAB") 'tab-to-tab-stop)
-  (setq indent-tabs-mode t)
-  (setq tab-width custom-tab-width))
-
-;; Hooks to Enable Tabs
-(add-hook 'prog-mode-hook 'enable-tabs)
-;; Hooks to Disable Tabs
-(add-hook 'lisp-mode-hook 'enable-tabs)
-(add-hook 'emacs-lisp-mode-hook 'enable-tabs)
-(enable-tabs)
-;; Language-Specific Tweaks
-(setq-default python-indent-offset custom-tab-width) ;; Python
-(setq-default js-indent-level custom-tab-width)      ;; Javascript
-(setq-default scala-indent-level custom-tab-width) 
-;; Making electric-indent behave sanely
-(setq-default electric-indent-inhibit t)
-
-;; Make the backspace properly erase the tab instead of
-;; removing 1 space at a time.
-(setq backward-delete-char-untabify-method 'hungry)
-
-;; (OPTIONAL) Shift width for evil-mode users
-;; For the vim-like motions of ">>" and "<<".
-(setq-default evil-shift-width custom-tab-width)
-
-; END TABS CONFIG
+  (setq-default tab-width 4)
+  (setq-default indent-tabs-mode nil)
 #+end_src
 
 * IVY (Counsel)
@@ -401,6 +316,7 @@ Option that implements hiding of minor-modes in the modeline
            (C++-mode . lsp)
            (java-mode . lsp)
            (sh-mode . lsp)
+           (haskell-mode . lsp)
            (tex-mode . lsp))
     :custom
     (lsp-rust-analyzer-cargo-watch-command "clippy")
@@ -548,6 +464,12 @@ Option that implements hiding of minor-modes in the modeline
   (global-set-key [f9] 'code-compile) 
 #+end_src
 
+** Haskell
+#+begin_src emacs-lisp
+  (use-package haskell-mode
+    :ensure t
+    :hook (haskell-mode . interactive-haskell-mode))
+#+end_src
 ** ltex
  (use-package lsp-ltex
   :ensure t

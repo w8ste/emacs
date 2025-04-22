@@ -37,6 +37,20 @@
 ;(setq warning-minimum-level :error)  ; Only show errors, not warnings
 ;(setq warning-suppress-types '((comp)))  ; Suppress all compilation warnings
 
+;; magit
+  (keymap-global-set "C-c g" 'magit)
+
+  ;; eshell
+  (keymap-global-set "C-c e" 'eshell)
+
+  ;; buffer
+(which-key-add-key-based-replacements
+"C-c b" "buffer")
+
+(keymap-global-set "C-c b i" 'ibuffer)
+(keymap-global-set "C-c b p" 'previous-buffer)
+(keymap-global-set "C-c b n" 'next-buffer)
+
 (use-package diminish)
 (diminish 'projectile-mode)
 
@@ -46,6 +60,7 @@
 
 (use-package all-the-icons-dired
   :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+(add-hook 'dired-mode-hook 'dired-omit-mode)
 
 (use-package auctex
 :mode
@@ -59,81 +74,13 @@ TeX-view-program-selection)))))
          (setq TeX-view-program-selection '((output-pdf "Zathura"))
     TeX-source-correlate-start-server t)
 
+;; Make sure this path matches the one installed via cargo
  (setenv "PATH" (concat "/usr/local/texlive/2025/bin/x86_64-linux:" (getenv "PATH")))
  (add-to-list 'exec-path "/usr/local/texlive/2025/bin/x86_64-linux")
 
 (use-package smartparens
   :init
   (smartparens-global-mode))
-
-(require 'windmove)
-
-;;;###autoload
-(defun buf-move-up ()
-  "Swap the current buffer and the buffer above the split.
-If there is no split, ie now window above the current one, an
-error is signaled."
-  ;;  "Switches between the current buffer, and the buffer above the
-  ;;  split, if possible."
-  (interactive)
-  (let* ((other-win (windmove-find-other-window 'up))
-         (buf-this-buf (window-buffer (selected-window))))
-    (if (null other-win)
-        (error "No window above this one")
-      ;; swap top with this one
-      (set-window-buffer (selected-window) (window-buffer other-win))
-      ;; move this one to top
-      (set-window-buffer other-win buf-this-buf)
-      (select-window other-win))))
-
-;;;###autoload
-(defun buf-move-down ()
-  "Swap the current buffer and the buffer under the split.
-If there is no split, ie now window under the current one, an
-error is signaled."
-  (interactive)
-  (let* ((other-win (windmove-find-other-window 'down))
-         (buf-this-buf (window-buffer (selected-window))))
-    (if (or (null other-win) 
-            (string-match "^ \\*Minibuf" (buffer-name (window-buffer other-win))))
-        (error "No window under this one")
-      ;; swap top with this one
-      (set-window-buffer (selected-window) (window-buffer other-win))
-      ;; move this one to top
-      (set-window-buffer other-win buf-this-buf)
-      (select-window other-win))))
-
-;;;###autoload
-(defun buf-move-left ()
-  "Swap the current buffer and the buffer on the left of the split.
-If there is no split, ie now window on the left of the current
-one, an error is signaled."
-  (interactive)
-  (let* ((other-win (windmove-find-other-window 'left))
-         (buf-this-buf (window-buffer (selected-window))))
-    (if (null other-win)
-        (error "No left split")
-      ;; swap top with this one
-      (set-window-buffer (selected-window) (window-buffer other-win))
-      ;; move this one to top
-      (set-window-buffer other-win buf-this-buf)
-      (select-window other-win))))
-
-;;;###autoload
-(defun buf-move-right ()
-  "Swap the current buffer and the buffer on the right of the split.
-If there is no split, ie now window on the right of the current
-one, an error is signaled."
-  (interactive)
-  (let* ((other-win (windmove-find-other-window 'right))
-         (buf-this-buf (window-buffer (selected-window))))
-    (if (null other-win)
-        (error "No right split")
-      ;; swap top with this one
-      (set-window-buffer (selected-window) (window-buffer other-win))
-      ;; move this one to top
-      (set-window-buffer other-win buf-this-buf)
-      (select-window other-win))))
 
 (use-package dired-open
   :config
@@ -217,39 +164,8 @@ one, an error is signaled."
           ("NOTE"       success bold)
           ("DEPRECATED" font-lock-doc-face bold))))
 
-; START TABS CONFIG
-;; Create a variable for our preferred tab width
-(setq custom-tab-width 4)
-
-;; Two callable functions for enabling/disabling tabs in Emacs
-(defun disable-tabs () (setq indent-tabs-mode nil))
-(defun enable-tabs  ()
-  (local-set-key (kbd "TAB") 'tab-to-tab-stop)
-  (setq indent-tabs-mode t)
-  (setq tab-width custom-tab-width))
-
-;; Hooks to Enable Tabs
-(add-hook 'prog-mode-hook 'enable-tabs)
-;; Hooks to Disable Tabs
-(add-hook 'lisp-mode-hook 'enable-tabs)
-(add-hook 'emacs-lisp-mode-hook 'enable-tabs)
-(enable-tabs)
-;; Language-Specific Tweaks
-(setq-default python-indent-offset custom-tab-width) ;; Python
-(setq-default js-indent-level custom-tab-width)      ;; Javascript
-(setq-default scala-indent-level custom-tab-width) 
-;; Making electric-indent behave sanely
-(setq-default electric-indent-inhibit t)
-
-;; Make the backspace properly erase the tab instead of
-;; removing 1 space at a time.
-(setq backward-delete-char-untabify-method 'hungry)
-
-;; (OPTIONAL) Shift width for evil-mode users
-;; For the vim-like motions of ">>" and "<<".
-(setq-default evil-shift-width custom-tab-width)
-
-; END TABS CONFIG
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
 
 (use-package counsel
   :bind (("C-x b" . 'counsel-ibuffer)
@@ -272,6 +188,7 @@ one, an error is signaled."
          (C++-mode . lsp)
          (java-mode . lsp)
          (sh-mode . lsp)
+         (haskell-mode . lsp)
          (tex-mode . lsp))
   :custom
   (lsp-rust-analyzer-cargo-watch-command "clippy")
@@ -389,6 +306,10 @@ one, an error is signaled."
                    file)))
     (compile compile-command)))
 (global-set-key [f9] 'code-compile)
+
+(use-package haskell-mode
+  :ensure t
+  :hook (haskell-mode . interactive-haskell-mode))
 
 (use-package scala-mode
   :mode "\\.s\\(cala\\|bt\\)$")
