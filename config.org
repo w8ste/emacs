@@ -117,6 +117,10 @@
   (keymap-global-set "C-c b i" 'ibuffer)
   (keymap-global-set "C-c b p" 'previous-buffer)
   (keymap-global-set "C-c b n" 'next-buffer)
+
+  ;; compile
+  (keymap-global-set "C-c c" 'compile)
+
   #+end_src
 * Diminish
 Option that implements hiding of minor-modes in the modeline
