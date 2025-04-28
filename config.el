@@ -51,6 +51,10 @@
 (keymap-global-set "C-c b p" 'previous-buffer)
 (keymap-global-set "C-c b n" 'next-buffer)
 
+;; Text scale
+(keymap-global-set "C-c s i" 'text-scale-increase)
+(keymap-global-set "C-c s d" 'text-scale-decrease)
+
 (use-package diminish)
 (diminish 'projectile-mode)
 
@@ -82,6 +86,11 @@ TeX-view-program-selection)))))
   :init
   (smartparens-global-mode))
 
+(use-package move-text
+:ensure t
+:config
+(move-text-default-bindings))  ;; binds M-↑ and M-↓
+
 (use-package dired-open
   :config
   (setq dired-open-extensions '(("gif" . "sxiv")
@@ -89,6 +98,14 @@ TeX-view-program-selection)))))
                                 ("png" . "sxiv")
                                 ("mkv" . "mpv")
                                 ("mp4" . "mpv"))))
+
+(use-package format-all
+:commands format-all-mode
+:hook (prog-mode . format-all-mode)
+:config
+(setq-default format-all-formatters
+              '(("C"     (astyle "--mode=c"))
+                ("Shell" (shfmt "-i" "4" "-ci")))))
 
 (set-frame-font "JetBrains Mono Medium 19")
 (set-face-attribute 'default nil

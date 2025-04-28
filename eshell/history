@@ -353,3 +353,7 @@ ls
 ./main
 exit
 cargo --versionrustc --version
+ls
+neofetch
+echo hello
+julia
