@@ -38,28 +38,26 @@
 ;(setq warning-suppress-types '((comp)))  ; Suppress all compilation warnings
 
 ;; magit
-    (keymap-global-set "C-c g" 'magit)
+  (keymap-global-set "C-c g" 'magit)
 
-    ;; eshell
-    (keymap-global-set "C-c e" 'eshell)
+  ;; eshell
+  (keymap-global-set "C-c e" 'eshell)
 
-    ;; buffer
-  (which-key-add-key-based-replacements
-  "C-c b" "buffer")
+  ;; buffer
+(which-key-add-key-based-replacements
+"C-c b" "buffer")
 
-  (keymap-global-set "C-c b i" 'ibuffer)
-  (keymap-global-set "C-c b p" 'previous-buffer)
-  (keymap-global-set "C-c b n" 'next-buffer)
+(keymap-global-set "C-c b i" 'ibuffer)
+(keymap-global-set "C-c b p" 'previous-buffer)
+(keymap-global-set "C-c b n" 'next-buffer)
 
 
-  ;; Text scale
-  (keymap-global-set "C-c s i" 'text-scale-increase)
-  (keymap-global-set "C-c s d" 'text-scale-decrease)
+;; Text scale
+(keymap-global-set "C-c s i" 'text-scale-increase)
+(keymap-global-set "C-c s d" 'text-scale-decrease)
 
-  ;; compile
-  (keymap-global-set "C-c c" 'compile)
-
->>>>>>> origin/new
+;; compile
+(keymap-global-set "C-c c" 'compile)
 
 (use-package diminish)
 (diminish 'projectile-mode)
@@ -204,6 +202,7 @@ TeX-view-program-selection)))))
          (java-mode . lsp)
          (sh-mode . lsp)
          (haskell-mode . lsp)
+         (css-mode . lsp)
          (tex-mode . lsp))
   :custom
   (lsp-rust-analyzer-cargo-watch-command "clippy")

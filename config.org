@@ -335,6 +335,7 @@ The goat
            (java-mode . lsp)
            (sh-mode . lsp)
            (haskell-mode . lsp)
+           (css-mode . lsp)
            (tex-mode . lsp))
     :custom
     (lsp-rust-analyzer-cargo-watch-command "clippy")
