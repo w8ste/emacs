@@ -38,22 +38,28 @@
 ;(setq warning-suppress-types '((comp)))  ; Suppress all compilation warnings
 
 ;; magit
-  (keymap-global-set "C-c g" 'magit)
+    (keymap-global-set "C-c g" 'magit)
 
-  ;; eshell
-  (keymap-global-set "C-c e" 'eshell)
+    ;; eshell
+    (keymap-global-set "C-c e" 'eshell)
 
-  ;; buffer
-(which-key-add-key-based-replacements
-"C-c b" "buffer")
+    ;; buffer
+  (which-key-add-key-based-replacements
+  "C-c b" "buffer")
 
-(keymap-global-set "C-c b i" 'ibuffer)
-(keymap-global-set "C-c b p" 'previous-buffer)
-(keymap-global-set "C-c b n" 'next-buffer)
+  (keymap-global-set "C-c b i" 'ibuffer)
+  (keymap-global-set "C-c b p" 'previous-buffer)
+  (keymap-global-set "C-c b n" 'next-buffer)
 
-;; Text scale
-(keymap-global-set "C-c s i" 'text-scale-increase)
-(keymap-global-set "C-c s d" 'text-scale-decrease)
+
+  ;; Text scale
+  (keymap-global-set "C-c s i" 'text-scale-increase)
+  (keymap-global-set "C-c s d" 'text-scale-decrease)
+
+  ;; compile
+  (keymap-global-set "C-c c" 'compile)
+
+>>>>>>> origin/new
 
 (use-package diminish)
 (diminish 'projectile-mode)
@@ -99,13 +105,15 @@ TeX-view-program-selection)))))
                                 ("mkv" . "mpv")
                                 ("mp4" . "mpv"))))
 
-(use-package format-all
-:commands format-all-mode
-:hook (prog-mode . format-all-mode)
-:config
-(setq-default format-all-formatters
-              '(("C"     (astyle "--mode=c"))
-                ("Shell" (shfmt "-i" "4" "-ci")))))
+(use-package flycheck
+  :ensure t
+  :defer t
+  :diminish
+  :init
+  (add-hook 'c++-mode-hook
+            (lambda () (setq flycheck-clang-language-standard "c++17"))) 
+  (setq flycheck-clang-language-standard "c++17")
+  (global-flycheck-mode))
 
 (set-frame-font "JetBrains Mono Medium 19")
 (set-face-attribute 'default nil
@@ -135,16 +143,6 @@ TeX-view-program-selection)))))
 
 ;; Uncomment the following line if line spacing needs adjusting.
 (setq-default line-spacing 0.12)
-
-(use-package flycheck
-  :ensure t
-  :defer t
-  :diminish
-  :init
-  (add-hook 'c++-mode-hook
-            (lambda () (setq flycheck-clang-language-standard "c++17"))) 
-  (setq flycheck-clang-language-standard "c++17")
-  (global-flycheck-mode))
 
 (use-package magit
   :diminish)

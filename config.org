@@ -127,7 +127,6 @@
   ;; compile
   (keymap-global-set "C-c c" 'compile)
 
->>>>>>> origin/new
   #+end_src
 
 * Diminish
