@@ -119,9 +119,15 @@
   (keymap-global-set "C-c b p" 'previous-buffer)
   (keymap-global-set "C-c b n" 'next-buffer)
 
+
   ;; Text scale
   (keymap-global-set "C-c s i" 'text-scale-increase)
   (keymap-global-set "C-c s d" 'text-scale-decrease)
+
+  ;; compile
+  (keymap-global-set "C-c c" 'compile)
+
+>>>>>>> origin/new
   #+end_src
 
 * Diminish
