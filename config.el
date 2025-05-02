@@ -105,13 +105,18 @@ TeX-view-program-selection)))))
 
 (use-package flycheck
   :ensure t
-  :defer t
-  :diminish
-  :init
-  (add-hook 'c++-mode-hook
-            (lambda () (setq flycheck-clang-language-standard "c++17"))) 
-  (setq flycheck-clang-language-standard "c++17")
-  (global-flycheck-mode))
+  :init (global-flycheck-mode)
+  :config
+  (setq flycheck-display-errors-function
+    #'flycheck-display-error-messages-unless-error-list)
+
+  (setq flycheck-indication-mode nil))
+
+(use-package flycheck-pos-tip
+  :ensure t
+  :after flycheck
+  :config
+  (flycheck-pos-tip-mode))
 
 (set-frame-font "JetBrains Mono Medium 19")
 (set-face-attribute 'default nil
@@ -198,6 +203,8 @@ TeX-view-program-selection)))))
   :hook ((LaTeX-mode . lsp-deferred)
          (lsp-mode . lsp-enable-which-key-integration)
          (julia-mode . lsp)
+         (c-mode . lsp)
+         (c++-mode . lsp)
          (C++-mode . lsp)
          (java-mode . lsp)
          (sh-mode . lsp)
@@ -260,6 +267,8 @@ TeX-view-program-selection)))))
   (company-idle-delay 0.0))
 
 (use-package company-box
+  :ensure t
+  :after company
   :hook (company-mode . company-box-mode))
 
 (use-package dap-mode
@@ -300,26 +309,14 @@ TeX-view-program-selection)))))
                           (lsp))))
 
 (use-package ccls
-  :ensure t
-  :config
-  (setq ccls-executable "ccls")
-  (setq lsp-prefer-flymake nil)
-  (setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
-  :hook ((c-mode c++-mode objc-mode) .
-         (lambda () (require 'ccls) (lsp))))
-
- ;;; This will enable emacs to compile a simple cpp single file without any makefile by just pressing [f9] key
-(defun code-compile()
-  (interactive)
-  (unless (file-exists-p "Makefile")
-    (set (make-local-variable 'compile-command)
-         (let ((file (file-name-nondirectory buffer-file-name)))
-           (format "%s -o %s %s"
-                   (if (equal (file-name-extension file) "cpp") "g++" "gcc")
-                   (file-name-sans-extension file)
-                   file)))
-    (compile compile-command)))
-(global-set-key [f9] 'code-compile)
+:ensure t
+:hook ((c-mode c++-mode objc-mode cuda-mode) .
+       (lambda () (require 'ccls) (lsp)))
+:config
+(progn
+  (setq ccls-executable "/usr/bin/ccls")
+  (setq ccls-initialization-options
+        '(:index (:comments 2) :completion (:detailedLabel t)))))
 
 (use-package haskell-mode
   :ensure t
