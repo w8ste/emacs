@@ -1,0 +1,11 @@
+	.cache/
+	.dap-breakpoints
+	.extension/
+	.lsp-session-v1
+	auto-save-list/
+	eln-cache/
+	elpa/
+	projectile-bookmarks.eld
+	sessions
+	transient/
+	tree-sitter/
