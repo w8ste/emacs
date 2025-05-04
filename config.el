@@ -71,35 +71,20 @@
 (add-hook 'dired-mode-hook 'dired-omit-mode)
 
 (use-package auctex
-  :mode ("\\.tex\\'" . LaTeX-mode)
-  :hook ((LaTeX-mode . TeX-PDF-mode)
-         (LaTeX-mode . TeX-source-correlate-mode)
-         (LaTeX-mode . (lambda ()
-                         (setq TeX-source-correlate-start-server t)
-                         (add-to-list 'TeX-view-program-selection
-                                      '(output-pdf "MySplitViewer")))))
-  :config
-  ;; Register the custom viewer
-  (setq TeX-view-program-list
-        '(("MySplitViewer" my/TeX-view-split-window)))
+:mode
+("\\.tex\\'" . tex-mode)
+:hook
+((tex-mode . lsp-deferred)
+(tex-mode . (lambda ()
+(push (list 'output-pdf "Zathura")
+TeX-view-program-selection)))))
 
-  ;; Function to open PDF in a horizontal split using DocView
-  (defun my/TeX-view-split-window ()
-    (interactive)
-    (let* ((pdf-file (concat (TeX-active-master) ".pdf"))
-           (pdf-buffer (get-file-buffer pdf-file)))
-      (if pdf-buffer
-          (progn
-            (select-window (split-window-right))
-            (switch-to-buffer pdf-buffer))
+         (setq TeX-view-program-selection '((output-pdf "Zathura"))
+    TeX-source-correlate-start-server t)
 
-        (select-window (split-window-right))
-        (find-file pdf-file))))
-  )
-
-    ;; Make sure this path matches the one installed via cargo
-     (setenv "PATH" (concat "/usr/local/texlive/2025/bin/x86_64-linux:" (getenv "PATH")))
-     (add-to-list 'exec-path "/usr/local/texlive/2025/bin/x86_64-linux")
+;; Make sure this path matches the one installed via cargo
+ (setenv "PATH" (concat "/usr/local/texlive/2025/bin/x86_64-linux:" (getenv "PATH")))
+ (add-to-list 'exec-path "/usr/local/texlive/2025/bin/x86_64-linux")
 
 (use-package smartparens
   :init
