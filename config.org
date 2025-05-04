@@ -43,7 +43,7 @@
   - [[#enable-toc][Enable ToC]]
   - [[#enable-bullet-points][Enable bullet points]]
   - [[#disable-electric-indent][Disable electric indent]]
-- [[#pdf-tool][PDF-Tool]]
+- [[#multiple-cursor][Multiple Cursor]]
 - [[#perspective][Perspective]]
 - [[#rainbow-delimiters][Rainbow Delimiters]]
 - [[#rainbow-mode][Rainbow Mode]]
@@ -580,10 +580,14 @@ The goat
   (require 'org-tempo)
 #+end_src
 
-* PDF-Tool
+* Multiple Cursor
 #+begin_src emacs-lisp
-  (use-package pdf-tools
-    :defer t)
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C-S-c C-S-c" . mc/edit-lines)
+         ("C->"         . mc/mark-next-like-this)
+         ("C-<"         . mc/mark-previous-like-this)
+         ("C-c C-<"     . mc/mark-all-like-this)))
 #+end_src
 * Perspective
 #+begin_src emacs-lisp
