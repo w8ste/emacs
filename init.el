@@ -15,10 +15,12 @@
  '(highlight-indent-guides-method 'character)
  '(ignored-local-variable-values '((TeX-master . t)))
  '(lsp-clangd-version "16.0.2")
- '(package-selected-packages '(python-pytest auctex lua-mode)))
+ '(package-selected-packages nil)
+ '(tab-width 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(whitespace-tab ((t (:foreground "#636363")))))
+(put 'upcase-region 'disabled nil)
