@@ -121,6 +121,13 @@ TeX-view-program-selection)))))
   :config
   (flycheck-pos-tip-mode))
 
+(defun make-shell (name)
+  "Create a shell buffer named NAME."
+  (interactive "sName: ")
+  (setq name (concat "$" name))
+  (eshell)
+  (rename-buffer name))
+
 (set-frame-font "JetBrains Mono Medium 19")
 (set-face-attribute 'default nil
                     :font "JetBrains Mono Medium"
@@ -163,14 +170,14 @@ TeX-view-program-selection)))))
 
 (use-package gradle-mode)
 
-;;(use-package highlight-indent-guides
-;;:config
-;;(set-face-background 'highlight-indent-guides-odd-face "darkgray")
-;;(set-face-background 'highlight-indent-guides-even-face "dimgray")
-;;(set-face-foreground 'highlight-indent-guides-character-face "dimgray")
-;;(add-hook 'c++-mode-hook 'highlight-indent-guides-mode)
-;;(add-hook 'java-mode-hook 'highlight-indent-guides-mode)
-;;(add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
+(use-package highlight-indent-guides
+:config
+(set-face-background 'highlight-indent-guides-odd-face "darkgray")
+(set-face-background 'highlight-indent-guides-even-face "dimgray")
+(set-face-foreground 'highlight-indent-guides-character-face "dimgray")
+(add-hook 'c++-mode-hook 'highlight-indent-guides-mode)
+(add-hook 'java-mode-hook 'highlight-indent-guides-mode)
+(add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 
 (use-package hl-todo
   :hook ((org-mode . hl-todo-mode)
@@ -305,6 +312,8 @@ TeX-view-program-selection)))))
         :config
 (setq lsp-julia-default-environment "~/.julia/environments/v1.11"))
 
+(use-package pytest)
+
 (use-package verilog-mode
   :ensure t
   :hook (verilog-mode . (lambda ()
@@ -356,13 +365,28 @@ TeX-view-program-selection)))))
   (lsp-metals-enable-semantic-highlighting t)
   :hook (scala-mode . lsp))
 
+(setq package-selected-packages 
+  '(dart-mode lsp-mode lsp-dart lsp-treemacs flycheck company
+    ;; Optional packages
+    lsp-ui company hover))
+
+(when (cl-find-if-not #'package-installed-p package-selected-packages)
+  (package-refresh-contents)
+  (mapc #'package-install package-selected-packages))
+
+(add-hook 'dart-mode-hook 'lsp)
+
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024))
+
 (global-set-key [escape] 'keyboard-escape-quit)
 
 (use-package toc-org
   :diminish
   :commands toc-org-enable
   :init (add-hook 'org-mode-hook 'toc-org-enable)
-  (setq org-agenda-start-on-weekday 1))
+  (setq org-agenda-start-on-weekday 1)
+  (setq org-agenda-files (list "~/University/uni.org")))
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (use-package org-bullets
@@ -484,3 +508,21 @@ TeX-view-program-selection)))))
   (when (and (boundp 'yas-minor-mode) yas-minor-mode)
     (let ((yas-buffer-local-condition ''(require-snippet-condition . auto)))
       (yas-expand))))
+
+(defun unbind-shift-keybindings ()
+  "Unbind all keybindings containing the Shift key."
+  (interactive)
+  (let ((shift-key-prefixes '("S-" "s-")))
+    (mapc (lambda (keymap)
+            (mapc (lambda (prefix)
+                    (mapc (lambda (key)
+                            (define-key keymap (kbd (concat prefix key)) nil))
+                          '("!" "\"" "#" "$" "%" "&" "'" "(" ")" "*"
+                            "+" "," "-" "." "/" ":" ";" "<" "=" ">" "?"
+                            "@" "[" "\\" "]" "^" "_" "`" "{" "|" "}" "~"
+                            "0" "1" "2" "3" "4" "5" "6" "7" "8" "9"
+                            "A" "B" "C" "D" "E" "F" "G" "H" "I" "J"
+                            "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T"
+                            "U" "V" "W" "X" "Y" "Z")))
+                  shift-key-prefixes))
+          (list global-map (current-local-map)))))
