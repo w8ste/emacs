@@ -53,11 +53,14 @@
 
 
 ;; Text scale
+(which-key-add-key-based-replacements "C-c s" "scale")
 (keymap-global-set "C-c s i" 'text-scale-increase)
 (keymap-global-set "C-c s d" 'text-scale-decrease)
 
 ;; compile
 (keymap-global-set "C-c c" 'compile)
+
+
 
 (use-package diminish)
 (diminish 'projectile-mode)

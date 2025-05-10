@@ -8,6 +8,7 @@
   - [[#package-system][Package System]]
   - [[#general-settings][General settings]]
   - [[#keybinds][Keybinds]]
+- [[#datalog][Datalog]]
 - [[#diminish][Diminish]]
 - [[#all-the-icons][All the icons]]
 - [[#auctex][AUCTex]]
@@ -121,6 +122,7 @@
 
 
   ;; Text scale
+  (which-key-add-key-based-replacements "C-c s" "scale")
   (keymap-global-set "C-c s i" 'text-scale-increase)
   (keymap-global-set "C-c s d" 'text-scale-decrease)
 
@@ -129,6 +131,10 @@
 
   #+end_src
 
+* Datalog
+#+begin_src emacs-lisp
+
+#+end_src
 * Diminish
 Option that implements hiding of minor-modes in the modeline
 #+begin_src emacs-lisp
