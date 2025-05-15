@@ -38,19 +38,17 @@
 ;(setq warning-suppress-types '((comp)))  ; Suppress all compilation warnings
 
 ;; magit
-  (keymap-global-set "C-c g" 'magit)
+(keymap-global-set "C-c g" 'magit)
 
-  ;; eshell
-  (keymap-global-set "C-c e" 'eshell)
+;; eshell
+(keymap-global-set "C-c e" 'eshell)
 
-  ;; buffer
-(which-key-add-key-based-replacements
-"C-c b" "buffer")
+;; buffer
+(which-key-add-key-based-replacements "C-c b" "buffer")
 
 (keymap-global-set "C-c b i" 'ibuffer)
 (keymap-global-set "C-c b p" 'previous-buffer)
 (keymap-global-set "C-c b n" 'next-buffer)
-
 
 ;; Text scale
 (which-key-add-key-based-replacements "C-c s" "scale")
@@ -59,6 +57,13 @@
 
 ;; compile
 (keymap-global-set "C-c c" 'compile)
+
+;; tooling
+(which-key-add-key-based-replacements "C-c t" "tools")
+(keymap-global-set "C-c t s" 'sbt-start)
+(keymap-global-set "C-c t n" 'sbt-switch-to-active-sbt-buffer)
+
+(keymap-global-set "C-c r" 'rename-file)
 
 
 
