@@ -205,81 +205,89 @@ TeX-view-program-selection)))))
   (counsel-mode 1))
 
 (use-package lsp-mode
+    :ensure t
+    :commands (lsp lsp-deferred)
+    :init
+    (setq lsp-keymap-prefix "C-c l"
+          lsp-modeline-diagnostics-enable nil)
+    :hook ((LaTeX-mode . lsp-deferred)
+           (lsp-mode . lsp-enable-which-key-integration)
+           (julia-mode . lsp)
+           (c-mode . lsp)
+           (c++-mode . lsp)
+           (C++-mode . lsp)
+           (java-mode . lsp)
+           (sh-mode . lsp)
+           (haskell-mode . lsp)
+           (css-mode . lsp)
+           (tex-mode . lsp))
+    :custom
+    (lsp-rust-analyzer-cargo-watch-command "clippy")
+    (lsp-eldoc-render-all t)
+    (lsp-idle-delay 0.6)
+    (lsp-inlay-hint-enable t)
+    (lsp-log-io t)
+    (lsp-diagnostics-provider :flycheck) ;; Explicitly use Flycheck
+    :config
+    (setq lsp-rust-analyzer-display-lifetime-elision-hints-enable t
+          lsp-rust-analyzer-display-chaining-hints t
+          lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil
+          lsp-rust-analyzer-display-closure-return-type-hints t
+          lsp-rust-analyzer-display-parameter-hints nil
+          lsp-rust-analyzer-display-reborrow-hints nil))
+
+  (use-package lsp-latex
+    :ensure t
+    :hook (bibtex-mode . lsp))
+
+  (use-package lsp-ui
+    :ensure t
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-doc-position 'bottom))
+
+  (use-package lsp-treemacs
+    :ensure t
+    :after lsp)
+
+  (use-package lsp-ivy
+    :ensure t
+    :after lsp)
+
+  (use-package lsp-pyright
   :ensure t
-  :commands (lsp lsp-deferred)
-  :init
-  (setq lsp-keymap-prefix "C-c l"
-        lsp-modeline-diagnostics-enable nil)
-  :hook ((LaTeX-mode . lsp-deferred)
-         (lsp-mode . lsp-enable-which-key-integration)
-         (julia-mode . lsp)
-         (c-mode . lsp)
-         (c++-mode . lsp)
-         (C++-mode . lsp)
-         (java-mode . lsp)
-         (sh-mode . lsp)
-         (haskell-mode . lsp)
-         (css-mode . lsp)
-         (tex-mode . lsp))
-  :custom
-  (lsp-rust-analyzer-cargo-watch-command "clippy")
-  (lsp-eldoc-render-all t)
-  (lsp-idle-delay 0.6)
-  (lsp-inlay-hint-enable t)
-  (lsp-log-io t)
-  (lsp-diagnostics-provider :flycheck) ;; Explicitly use Flycheck
-  :config
-  (setq lsp-rust-analyzer-display-lifetime-elision-hints-enable t
-        lsp-rust-analyzer-display-chaining-hints t
-        lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil
-        lsp-rust-analyzer-display-closure-return-type-hints t
-        lsp-rust-analyzer-display-parameter-hints nil
-        lsp-rust-analyzer-display-reborrow-hints nil))
+  :after lsp-mode
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp-deferred))))  ;; or just (lsp) if you prefer
 
-(use-package lsp-latex
-  :ensure t
-  :hook (bibtex-mode . lsp))
+          (require 'package)
 
-(use-package lsp-ui
-  :ensure t
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-doc-position 'bottom))
-
-(use-package lsp-treemacs
-  :ensure t
-  :after lsp)
-
-(use-package lsp-ivy
-  :ensure t
-  :after lsp)
-
-(use-package lsp-pyright
-:ensure t
-:after lsp-mode
-:hook (python-mode . (lambda ()
-                       (require 'lsp-pyright)
-                       (lsp-deferred))))  ;; or just (lsp) if you prefer
-
-        (require 'package)
+(with-eval-after-load 'lsp-mode
+  (define-key lsp-mode-map (kbd "TAB") nil))
 
 (use-package company
-  :after lsp-mode
-  :hook (lsp-mode . company-mode)
-  :bind (:map company-active-map
-         ("C-u" . company-complete-selection)
-         ("C-j" . company-select-next)
-         ("C-k" . company-select-previous))
-        (:map lsp-mode-map
-         ("C-i" . company-indent-or-complete-common))
-  :custom
-  (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind (:map company-active-map
+           ("C-u" . company-complete-selection)
+           ("C-j" . company-select-next)
+           ("C-k" . company-select-previous))
+          (:map lsp-mode-map
+           ("C-i" . company-indent-or-complete-common)
+           ("<TAB>" . indent-for-tab-command))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0))
 
-(use-package company-box
-  :ensure t
-  :after company
-  :hook (company-mode . company-box-mode))
+  (use-package company-box
+    :ensure t
+    :after company
+    :hook (company-mode . company-box-mode))
+
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "TAB") nil)
+  (define-key company-active-map (kbd "<tab>") nil))
 
 (use-package dap-mode
   ;; Uncomment the config below if you want all UI panes to be hidden by default!
