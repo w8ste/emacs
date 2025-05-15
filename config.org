@@ -16,6 +16,7 @@
 - [[#move-text][Move-Text]]
 - [[#dired][Dired]]
 - [[#flycheck][Flycheck]]
+- [[#eshell][Eshell]]
 - [[#fonts][FONTS]]
   - [[#settings-the-font-face][Settings The Font Face]]
 - [[#git-programms][Git Programms]]
@@ -49,7 +50,7 @@
 - [[#perspective][Perspective]]
 - [[#rainbow-delimiters][Rainbow Delimiters]]
 - [[#rainbow-mode][Rainbow Mode]]
-  - [[#eshell][Eshell]]
+  - [[#eshell-1][Eshell]]
 - [[#theme][Theme]]
 - [[#treesitter][Treesitter]]
 - [[#which-key][WHICH-KEY]]
@@ -129,6 +130,10 @@
 
   ;; compile
   (keymap-global-set "C-c c" 'compile)
+
+  ;; tooling
+  (keymap-global-set "C-c t s" 'sbt-start)
+  (keymap-global-set "C-c t n" 'sbt-switch-to-active-sbt-buffer)
 
   #+end_src
 
@@ -406,28 +411,36 @@ The goat
 
           (require 'package)
 
+(with-eval-after-load 'lsp-mode
+  (define-key lsp-mode-map (kbd "TAB") nil))
+
 
 #+end_src
 
 ** Company
 #+begin_src emacs-lisp
-    (use-package company
-    :after lsp-mode
-    :hook (lsp-mode . company-mode)
-    :bind (:map company-active-map
-           ("C-u" . company-complete-selection)
-           ("C-j" . company-select-next)
-           ("C-k" . company-select-previous))
-          (:map lsp-mode-map
-           ("C-i" . company-indent-or-complete-common))
-    :custom
-    (company-minimum-prefix-length 1)
-    (company-idle-delay 0.0))
+      (use-package company
+      :after lsp-mode
+      :hook (lsp-mode . company-mode)
+      :bind (:map company-active-map
+             ("C-u" . company-complete-selection)
+             ("C-j" . company-select-next)
+             ("C-k" . company-select-previous))
+            (:map lsp-mode-map
+             ("C-i" . company-indent-or-complete-common)
+             ("<TAB>" . indent-for-tab-command))
+      :custom
+      (company-minimum-prefix-length 1)
+      (company-idle-delay 0.0))
 
-  (use-package company-box
-    :ensure t
-    :after company
-    :hook (company-mode . company-box-mode))
+    (use-package company-box
+      :ensure t
+      :after company
+      :hook (company-mode . company-box-mode))
+
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "TAB") nil)
+    (define-key company-active-map (kbd "<tab>") nil))
 
 #+end_src
 
