@@ -1,4 +1,4 @@
-- +TITLE: w8stes's GNU Emacs Config
+#+TITLE: w8stes's GNU Emacs Config
 #+AUTHOR: w8ste
 #+STARTUP: showerverything
 #+OPTIONS: toc:2
@@ -14,9 +14,11 @@
 - [[#auctex][AUCTex]]
 - [[#autopair][Autopair]]
 - [[#move-text][Move-Text]]
+- [[#disable-escape-quit][Disable escape quit]]
 - [[#dired][Dired]]
 - [[#flycheck][Flycheck]]
 - [[#eshell][Eshell]]
+- [[#elfeed][Elfeed]]
 - [[#fonts][FONTS]]
   - [[#settings-the-font-face][Settings The Font Face]]
 - [[#git-programms][Git Programms]]
@@ -50,6 +52,7 @@
 - [[#perspective][Perspective]]
 - [[#rainbow-delimiters][Rainbow Delimiters]]
 - [[#rainbow-mode][Rainbow Mode]]
+- [[#shells-and-terminals][Shells and Terminals]]
   - [[#eshell-1][Eshell]]
 - [[#theme][Theme]]
 - [[#treesitter][Treesitter]]
@@ -112,8 +115,14 @@
   (keymap-global-set "C-c g" 'magit)
 
   ;; eshell
-  (keymap-global-set "C-c e" 'eshell)
+  (keymap-global-set "C-c a" 'eshell)
 
+  ;; elfeed
+  (which-key-add-key-based-replacements "C-c e" "elfeed")
+  (keymap-global-set "C-c e f" 'elfeed)
+  (keymap-global-set "C-c e u" 'elfeed-update)
+  (keymap-global-set "C-c e U" 'elfeed-update-feed)
+  (keymap-global-set "C-c e a" 'elfeed-add-feed)
   ;; buffer
   (which-key-add-key-based-replacements "C-c b" "buffer")
 
@@ -197,7 +206,10 @@ TeX-view-program-selection)))))
   :config
   (move-text-default-bindings))  ;; binds M-↑ and M-↓
 #+end_src
-
+* Disable escape quit
+#+begin_src emacs-lisp
+(global-unset-key (kbd "ESC ESC ESC"))
+#+end_src
 * Dired
 #+begin_src emacs-lisp
   (use-package dired-open
@@ -237,6 +249,12 @@ TeX-view-program-selection)))))
     (eshell)
     (rename-buffer name))
 
+#+end_src
+
+* Elfeed
+#+begin_src emacs-lisp
+    (use-package elfeed
+      :ensure t)
 #+end_src
 
 * FONTS
@@ -301,7 +319,7 @@ The goat
 #+end_src
 
 * Highlight Indents
-#+begin_src emacs-lisp
+#+begin_src
   (use-package highlight-indent-guides
   :config
   (set-face-background 'highlight-indent-guides-odd-face "darkgray")
@@ -485,8 +503,6 @@ The goat
          :after lsp-mode
           :config
   (setq lsp-julia-default-environment "~/.julia/environments/v1.11"))
-
-
 #+end_src
 
 PyTest 
@@ -599,7 +615,7 @@ PyTest
     :commands toc-org-enable
     :init (add-hook 'org-mode-hook 'toc-org-enable)
     (setq org-agenda-start-on-weekday 1)
-    (setq org-agenda-files (list "~/University/uni.org")))
+    (setq org-agenda-files (list "~/University/uni.org" "~/work/work.org" "~/University/powi.org")))
 #+end_src
 
 ** Enable bullet points
@@ -613,7 +629,9 @@ PyTest
 
 ** Disable electric indent
 #+begin_src emacs_lisp
-(electric-indent-mode -1)
+(with-eval-after-load 'electric
+  (electric-indent-mode -1))
+
 (setq org-edit-src-content-indention 1)
 #+end_src
 
@@ -630,6 +648,7 @@ PyTest
          ("C-<"         . mc/mark-previous-like-this)
          ("C-c C-<"     . mc/mark-all-like-this)))
 #+end_src
+
 * Perspective
 #+begin_src emacs-lisp
   (use-package perspective
@@ -671,7 +690,7 @@ PyTest
     ((org-mode prog-mode) . rainbow-mode))
 #+end_src
 
-: * Shells and Terminals
+* Shells and Terminals
 ** Eshell
 Shell written in emacs-lisp
 #+begin_src emacs-lisp
@@ -764,7 +783,7 @@ Shell written in emacs-lisp
         (yas-expand))))
 #+end_src
 
-#+begin_src emacs-lisp
+#+begin_src
 (defun unbind-shift-keybindings ()
   "Unbind all keybindings containing the Shift key."
   (interactive)

@@ -41,8 +41,14 @@
 (keymap-global-set "C-c g" 'magit)
 
 ;; eshell
-(keymap-global-set "C-c e" 'eshell)
+(keymap-global-set "C-c a" 'eshell)
 
+;; elfeed
+(which-key-add-key-based-replacements "C-c e" "elfeed")
+(keymap-global-set "C-c e f" 'elfeed)
+(keymap-global-set "C-c e u" 'elfeed-update)
+(keymap-global-set "C-c e U" 'elfeed-update-feed)
+(keymap-global-set "C-c e a" 'elfeed-add-feed)
 ;; buffer
 (which-key-add-key-based-replacements "C-c b" "buffer")
 
@@ -103,6 +109,8 @@ TeX-view-program-selection)))))
 :config
 (move-text-default-bindings))  ;; binds M-↑ and M-↓
 
+(global-unset-key (kbd "ESC ESC ESC"))
+
 (use-package dired-open
   :config
   (setq dired-open-extensions '(("gif" . "sxiv")
@@ -132,6 +140,9 @@ TeX-view-program-selection)))))
   (setq name (concat "$" name))
   (eshell)
   (rename-buffer name))
+
+(use-package elfeed
+  :ensure t)
 
 (set-frame-font "JetBrains Mono Medium 19")
 (set-face-attribute 'default nil
@@ -174,15 +185,6 @@ TeX-view-program-selection)))))
 (global-visual-line-mode t)
 
 (use-package gradle-mode)
-
-(use-package highlight-indent-guides
-:config
-(set-face-background 'highlight-indent-guides-odd-face "darkgray")
-(set-face-background 'highlight-indent-guides-even-face "dimgray")
-(set-face-foreground 'highlight-indent-guides-character-face "dimgray")
-(add-hook 'c++-mode-hook 'highlight-indent-guides-mode)
-(add-hook 'java-mode-hook 'highlight-indent-guides-mode)
-(add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 
 (use-package hl-todo
   :hook ((org-mode . hl-todo-mode)
@@ -399,7 +401,7 @@ TeX-view-program-selection)))))
   :commands toc-org-enable
   :init (add-hook 'org-mode-hook 'toc-org-enable)
   (setq org-agenda-start-on-weekday 1)
-  (setq org-agenda-files (list "~/University/uni.org")))
+  (setq org-agenda-files (list "~/University/uni.org" "~/work/work.org" "~/University/powi.org")))
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (use-package org-bullets
@@ -521,21 +523,3 @@ TeX-view-program-selection)))))
   (when (and (boundp 'yas-minor-mode) yas-minor-mode)
     (let ((yas-buffer-local-condition ''(require-snippet-condition . auto)))
       (yas-expand))))
-
-(defun unbind-shift-keybindings ()
-  "Unbind all keybindings containing the Shift key."
-  (interactive)
-  (let ((shift-key-prefixes '("S-" "s-")))
-    (mapc (lambda (keymap)
-            (mapc (lambda (prefix)
-                    (mapc (lambda (key)
-                            (define-key keymap (kbd (concat prefix key)) nil))
-                          '("!" "\"" "#" "$" "%" "&" "'" "(" ")" "*"
-                            "+" "," "-" "." "/" ":" ";" "<" "=" ">" "?"
-                            "@" "[" "\\" "]" "^" "_" "`" "{" "|" "}" "~"
-                            "0" "1" "2" "3" "4" "5" "6" "7" "8" "9"
-                            "A" "B" "C" "D" "E" "F" "G" "H" "I" "J"
-                            "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T"
-                            "U" "V" "W" "X" "Y" "Z")))
-                  shift-key-prefixes))
-          (list global-map (current-local-map)))))

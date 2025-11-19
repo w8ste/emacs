@@ -11,3 +11,4 @@ sessions
 transient/
 tree-sitter/
 .mc-lists.el
+url/
