@@ -33,7 +33,6 @@
 - [[#language-support][Language Support]]
   - [[#lsp-mode][Lsp mode]]
   - [[#company][Company]]
-  - [[#dap-mode][Dap Mode]]
   - [[#java][Java]]
   - [[#python][Python]]
   - [[#julia][Julia]]
@@ -448,21 +447,6 @@ The goat
     (define-key company-active-map (kbd "TAB") nil)
     (define-key company-active-map (kbd "<tab>") nil))
 
-#+end_src
-
-** Dap Mode
-#+begin_src emacs-lisp
-(use-package dap-mode
-  ;; Uncomment the config below if you want all UI panes to be hidden by default!
-  ;; :custom
-  ;; (lsp-enable-dap-auto-configure nil)
-  ;; :config
-  ;; (dap-ui-mode 1)
-  :commands dap-debug
-  :config
-  ;; Set up Node debugging
-  (require 'dap-node)
-  (dap-node-setup)) ;; Automatically installs Node debug adapter if needed
 #+end_src
 
 ** Java
