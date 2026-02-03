@@ -310,12 +310,20 @@ TeX-view-program-selection)))))
   :config
   (require 'dap-python))
 
+;; Pyright lsp configuration 
+(use-package lsp-pyright
+:ensure t
+:custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
+:hook (python-mode . (lambda ()
+                        (require 'lsp-pyright)
+                        (lsp))))  ; or lsp-deferred
+;; Pytest
+(use-package pytest)
+
 (use-package lsp-julia
        :after lsp-mode
         :config
 (setq lsp-julia-default-environment "~/.julia/environments/v1.11"))
-
-(use-package pytest)
 
 (use-package verilog-mode
   :ensure t

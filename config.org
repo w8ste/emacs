@@ -457,16 +457,26 @@ The goat
 
 ** Python
 #+begin_src emacs-lisp
-(use-package python-mode
+  (use-package python-mode
+    :ensure t
+    :hook (python-mode . lsp-deferred)
+    :custom
+    ;; NOTE: Set these if Python 3 is called "python3" on your system!
+    ;; (python-shell-interpreter "python3")
+    ;; (dap-python-executable "python3")
+    (dap-python-debugger 'debugpy)
+    :config
+    (require 'dap-python))
+
+  ;; Pyright lsp configuration 
+  (use-package lsp-pyright
   :ensure t
-  :hook (python-mode . lsp-deferred)
-  :custom
-  ;; NOTE: Set these if Python 3 is called "python3" on your system!
-  ;; (python-shell-interpreter "python3")
-  ;; (dap-python-executable "python3")
-  (dap-python-debugger 'debugpy)
-  :config
-  (require 'dap-python))
+  :custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
+  ;; Pytest
+  (use-package pytest)
 #+end_src
 
 ** Julia
@@ -477,11 +487,6 @@ The goat
   (setq lsp-julia-default-environment "~/.julia/environments/v1.11"))
 
 
-#+end_src
-
-PyTest 
-#+begin_src emacs-lisp
-  (use-package pytest)
 #+end_src
 
 ** System Verilog
