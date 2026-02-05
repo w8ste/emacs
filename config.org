@@ -1,4 +1,4 @@
-- +TITLE: w8stes's GNU Emacs Config
+#+TITLE: w8stes's GNU Emacs Config
 #+AUTHOR: w8ste
 #+STARTUP: showerverything
 #+OPTIONS: toc:2
