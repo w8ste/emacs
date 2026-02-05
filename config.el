@@ -414,7 +414,12 @@ TeX-view-program-selection)))))
          ("C-<"         . mc/mark-previous-like-this)
          ("C-c C-<"     . mc/mark-all-like-this)))
 
+(use-package pdf-tools
+  :config
+  (pdf-tools-install))
+
 (use-package org-noter
+  :after pdf-tools
   :config
   (require 'org-noter-pdftools))
 

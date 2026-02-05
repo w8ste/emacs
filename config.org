@@ -47,6 +47,7 @@
   - [[#enable-bullet-points][Enable bullet points]]
   - [[#disable-electric-indent][Disable electric indent]]
 - [[#multiple-cursor][Multiple Cursor]]
+- [[#pdf-tools][PDF Tools]]
 - [[#org-mode-packages][Org Mode Packages]]
   - [[#org-noter][Org Noter]]
   - [[#org-pdftools][Org PDFtools]]
@@ -629,10 +630,19 @@ The goat
          ("C-c C-<"     . mc/mark-all-like-this)))
 #+end_src
 
+* PDF Tools
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :config
+    (pdf-tools-install))
+#+end_src
+
 * Org Mode Packages
+
 ** Org Noter
 #+begin_src emacs-lisp
   (use-package org-noter
+    :after pdf-tools
     :config
     (require 'org-noter-pdftools))
 #+end_src
