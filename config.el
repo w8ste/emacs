@@ -79,16 +79,11 @@
 (add-hook 'dired-mode-hook 'dired-omit-mode)
 
 (use-package auctex
-:mode
-("\\.tex\\'" . tex-mode)
-:hook
-((tex-mode . lsp-deferred)
-(tex-mode . (lambda ()
-(push (list 'output-pdf "Zathura")
-TeX-view-program-selection)))))
-
-         (setq TeX-view-program-selection '((output-pdf "Zathura"))
-    TeX-source-correlate-start-server t)
+  :defer t
+  :mode ("\\.tex\\'" . tex-mode)
+  :hook (tex-mode . lsp-deferred)
+  :config
+  (setq TeX-source-correlate-start-server t))
 
 ;; Make sure this path matches the one installed via cargo
  (setenv "PATH" (concat "/usr/local/texlive/2025/bin/x86_64-linux:" (getenv "PATH")))
@@ -415,8 +410,12 @@ TeX-view-program-selection)))))
          ("C-c C-<"     . mc/mark-all-like-this)))
 
 (use-package pdf-tools
+  :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
   :config
   (pdf-tools-install))
+
+(setq TeX-view-program-selection
+    '((output-pdf "PDF Tools")))
 
 (use-package org-noter
   :after pdf-tools
