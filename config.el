@@ -44,14 +44,14 @@
 (keymap-global-set "C-c e" 'eshell)
 
 ;; buffer
-(which-key-add-key-based-replacements "C-c b" "buffer")
+;(which-key-add-key-based-replacements "C-c b" "buffer")
 
 (keymap-global-set "C-c b i" 'ibuffer)
 (keymap-global-set "C-c b p" 'previous-buffer)
 (keymap-global-set "C-c b n" 'next-buffer)
 
 ;; Text scale
-(which-key-add-key-based-replacements "C-c s" "scale")
+;(which-key-add-key-based-replacements "C-c s" "scale")
 (keymap-global-set "C-c s i" 'text-scale-increase)
 (keymap-global-set "C-c s d" 'text-scale-decrease)
 
@@ -59,7 +59,7 @@
 (keymap-global-set "C-c c" 'compile)
 
 ;; tooling
-(which-key-add-key-based-replacements "C-c t" "tools")
+;(which-key-add-key-based-replacements "C-c t" "tools")
 (keymap-global-set "C-c t s" 'sbt-start)
 (keymap-global-set "C-c t n" 'sbt-switch-to-active-sbt-buffer)
 
@@ -86,8 +86,8 @@
   (setq TeX-source-correlate-start-server t))
 
 ;; Make sure this path matches the one installed via cargo
- (setenv "PATH" (concat "/usr/local/texlive/2025/bin/x86_64-linux:" (getenv "PATH")))
- (add-to-list 'exec-path "/usr/local/texlive/2025/bin/x86_64-linux")
+(setenv "PATH" (concat (expand-file-name "~/.cargo/bin") ":" (getenv "PATH")))
+(add-to-list 'exec-path (expand-file-name "~/.cargo/bin"))
 
 (use-package smartparens
   :init
