@@ -27,15 +27,15 @@
 (setq use-package-always-ensure t)
 
 ;; Disable backup files.
-    (setq make-backup-files nil)
-    ;; Prompt to delete autosaves when killing buffers.
-    (setq kill-buffer-delete-auto-save-files t)
+(setq make-backup-files nil)
+;; Prompt to delete autosaves when killing buffers.
+(setq kill-buffer-delete-auto-save-files t)
 
-    (global-visual-line-mode 0)
-    (toggle-truncate-lines 0)
-    (setq inhibit-splash-screen t)
-;(setq warning-minimum-level :error)  ; Only show errors, not warnings
-;(setq warning-suppress-types '((comp)))  ; Suppress all compilation warnings
+(global-visual-line-mode 0)
+(toggle-truncate-lines 0)
+(setq inhibit-splash-screen t)
+(setq warning-minimum-level :error)  ; Only show errors, not warnings
+(setq warning-suppress-types '((comp)))  ; Suppress all compilation warnings
 
 ;; magit
 (keymap-global-set "C-c g" 'magit)

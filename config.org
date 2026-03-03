@@ -105,9 +105,8 @@
     (global-visual-line-mode 0)
     (toggle-truncate-lines 0)
     (setq inhibit-splash-screen t)
-;(setq warning-minimum-level :error)  ; Only show errors, not warnings
-;(setq warning-suppress-types '((comp)))  ; Suppress all compilation warnings
-
+    (setq warning-minimum-level :error)  ; Only show errors, not warnings
+    (setq warning-suppress-types '((comp)))  ; Suppress all compilation warnings
 #+end_src
 
 ** Keybinds
