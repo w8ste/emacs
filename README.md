@@ -22,6 +22,11 @@ Installing `texlab`:
 cargo install --locked --git https://github.com/latex-lsp/texlab.git
 ```
 
+### Pyright 
+To install pyright, the npm package manager is needed
+```
+sudo apt install npm
+```
 
 ## Dependencies 
 - It is required to have a GUI application set as a pinentry program if you want to be able to sign commits from within emacs. Or atleast i did not get a tty version to work for me, this is probably a skill issue, altough utilizing a program like `pinentry-gtk2` is an easy fix.
