@@ -368,7 +368,6 @@ The goat
            (C++-mode . lsp)
            (java-mode . lsp)
            (sh-mode . lsp)
-           (haskell-mode . lsp)
            (css-mode . lsp)
            (tex-mode . lsp))
     :custom
@@ -512,10 +511,10 @@ The goat
 
 ** Haskell
 #+begin_src emacs-lisp
-  (use-package haskell-mode
-    :ensure t
-    :hook (haskell-mode . interactive-haskell-mode))
+(use-package haskell-mode
+  :hook (haskell-mode . (lambda () (flycheck-mode -1))))
 #+end_src
+
 ** ltex
  (use-package lsp-ltex
   :ensure t

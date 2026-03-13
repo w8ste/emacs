@@ -220,7 +220,6 @@
            (C++-mode . lsp)
            (java-mode . lsp)
            (sh-mode . lsp)
-           (haskell-mode . lsp)
            (css-mode . lsp)
            (tex-mode . lsp))
     :custom
@@ -337,8 +336,7 @@
         '(:index (:comments 2) :completion (:detailedLabel t)))))
 
 (use-package haskell-mode
-  :ensure t
-  :hook (haskell-mode . interactive-haskell-mode))
+  :ensure t)
 
 (use-package scala-mode
   :mode "\\.s\\(cala\\|bt\\)$")
