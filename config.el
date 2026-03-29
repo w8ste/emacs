@@ -179,6 +179,7 @@
 (set-face-foreground 'highlight-indent-guides-character-face "dimgray")
 (add-hook 'c++-mode-hook 'highlight-indent-guides-mode)
 (add-hook 'java-mode-hook 'highlight-indent-guides-mode)
+(add-hook 'scala-mode-hook 'highlight-indent-guides-mode)
 (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 
 (use-package hl-todo
@@ -255,15 +256,6 @@
     :ensure t
     :after lsp)
 
-  (use-package lsp-pyright
-  :ensure t
-  :after lsp-mode
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp-deferred))))  ;; or just (lsp) if you prefer
-
-          (require 'package)
-
 (with-eval-after-load 'lsp-mode
   (define-key lsp-mode-map (kbd "TAB") nil))
 
@@ -294,15 +286,15 @@
   :hook (java-mode . lsp-deferred))
 
 (use-package python-mode
-  :ensure t
-  :hook (python-mode . lsp-deferred)
-  :custom
-  ;; NOTE: Set these if Python 3 is called "python3" on your system!
-  ;; (python-shell-interpreter "python3")
-  ;; (dap-python-executable "python3")
-  (dap-python-debugger 'debugpy)
-  :config
-  (require 'dap-python))
+    :ensure t
+    :hook (python-mode . lsp-deferred)
+    :custom
+    ;; NOTE: Set these if Python 3 is called "python3" on your system!
+    ;; (python-shell-interpreter "python3")
+    ;; (dap-python-executable "python3")
+    (dap-python-debugger 'debugpy)
+    :config
+    (require 'dap-python))
 
 ;; Pyright lsp configuration 
 (use-package lsp-pyright
@@ -313,6 +305,9 @@
                         (lsp))))  ; or lsp-deferred
 ;; Pytest
 (use-package pytest)
+(use-package pyvenv)
+(use-package poetry
+  :hook (python-mode . poetry-tracking-mode))
 
 (use-package lsp-julia
        :after lsp-mode
@@ -336,10 +331,11 @@
         '(:index (:comments 2) :completion (:detailedLabel t)))))
 
 (use-package haskell-mode
-  :ensure t)
+  :hook (haskell-mode . (lambda () (flycheck-mode -1))))
 
 (use-package scala-mode
-  :mode "\\.s\\(cala\\|bt\\)$")
+  :mode "\\.s\\(cala\\|bt\\)$"
+  :hook (scala-mode . (lambda () (flycheck-mode -1) (electric-indent-mode -1))))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command

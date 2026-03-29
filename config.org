@@ -8,7 +8,7 @@
   - [[#package-system][Package System]]
   - [[#general-settings][General settings]]
   - [[#keybinds][Keybinds]]
-- [[#datalog][Datalog]]
+- [[#calender][Calender]]
 - [[#diminish][Diminish]]
 - [[#all-the-icons][All the icons]]
 - [[#auctex][AUCTex]]
@@ -140,9 +140,9 @@
   (keymap-global-set "C-c r" 'rename-file)
   #+end_src
 
-* Datalog
+* Calender
 #+begin_src emacs-lisp
-
+(setq calendar-week-start-day 1)
 #+end_src
 
 * Diminish
@@ -311,6 +311,7 @@ The goat
   (set-face-foreground 'highlight-indent-guides-character-face "dimgray")
   (add-hook 'c++-mode-hook 'highlight-indent-guides-mode)
   (add-hook 'java-mode-hook 'highlight-indent-guides-mode)
+  (add-hook 'scala-mode-hook 'highlight-indent-guides-mode)
   (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 #+end_src
 
@@ -403,19 +404,8 @@ The goat
     :ensure t
     :after lsp)
 
-  (use-package lsp-pyright
-  :ensure t
-  :after lsp-mode
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp-deferred))))  ;; or just (lsp) if you prefer
-
-          (require 'package)
-
 (with-eval-after-load 'lsp-mode
   (define-key lsp-mode-map (kbd "TAB") nil))
-
-
 #+end_src
 
 ** Company
@@ -453,16 +443,16 @@ The goat
 
 ** Python
 #+begin_src emacs-lisp
-  (use-package python-mode
-    :ensure t
-    :hook (python-mode . lsp-deferred)
-    :custom
-    ;; NOTE: Set these if Python 3 is called "python3" on your system!
-    ;; (python-shell-interpreter "python3")
-    ;; (dap-python-executable "python3")
-    (dap-python-debugger 'debugpy)
-    :config
-    (require 'dap-python))
+    (use-package python-mode
+      :ensure t
+      :hook (python-mode . lsp-deferred)
+      :custom
+      ;; NOTE: Set these if Python 3 is called "python3" on your system!
+      ;; (python-shell-interpreter "python3")
+      ;; (dap-python-executable "python3")
+      (dap-python-debugger 'debugpy)
+      :config
+      (require 'dap-python))
 
   ;; Pyright lsp configuration 
   (use-package lsp-pyright
@@ -473,6 +463,9 @@ The goat
                           (lsp))))  ; or lsp-deferred
   ;; Pytest
   (use-package pytest)
+  (use-package pyvenv)
+  (use-package poetry
+    :hook (python-mode . poetry-tracking-mode))  
 #+end_src
 
 ** Julia
@@ -527,36 +520,37 @@ The goat
 ** Scala
 #+begin_src emacs-lisp
 
-  (use-package scala-mode
-    :mode "\\.s\\(cala\\|bt\\)$")
+    (use-package scala-mode
+      :mode "\\.s\\(cala\\|bt\\)$"
+      :hook (scala-mode . (lambda () (flycheck-mode -1) (electric-indent-mode -1))))
 
-  (use-package sbt-mode
-    :commands sbt-start sbt-command
-    :config
-    ;; WORKAROUND: allows using SPACE when in the minibuffer
-    (substitute-key-definition
-     'minibuffer-complete-word
-     'self-insert-command
-     minibuffer-local-completion-map))
+    (use-package sbt-mode
+      :commands sbt-start sbt-command
+      :config
+      ;; WORKAROUND: allows using SPACE when in the minibuffer
+      (substitute-key-definition
+       'minibuffer-complete-word
+       'self-insert-command
+       minibuffer-local-completion-map))
 
-  (use-package lsp-metals
-    :ensure t
-    :custom
-    ;; You might set metals server options via -J arguments. This might not always work, for instance when
-    ;; metals is installed using nix. In this case you can use JAVA_TOOL_OPTIONS environment variable.
-    (lsp-metals-server-args '(;; Metals claims to support range formatting by default but it supports range
-                              ;; formatting of multiline strings only. You might want to disable it so that
-                              ;; emacs can use indentation provided by scala-mode.
-                              "-J-Dmetals.allow-multiline-string-formatting=off"
-                              ;; Enable unicode icons. But be warned that emacs might not render unicode
-                              ;; correctly in all cases.
-                              "-J-Dmetals.icons=unicode"))
-    ;; In case you want semantic highlighting. This also has to be enabled in lsp-mode using
-    ;; `lsp-semantic-tokens-enable' variable. Also you might want to disable highlighting of modifiers
-    ;; setting `lsp-semantic-tokens-apply-modifiers' to `nil' because metals sends `abstract' modifier
-    ;; which is mapped to `keyword' face.
-    (lsp-metals-enable-semantic-highlighting t)
-    :hook (scala-mode . lsp))
+    (use-package lsp-metals
+      :ensure t
+      :custom
+      ;; You might set metals server options via -J arguments. This might not always work, for instance when
+      ;; metals is installed using nix. In this case you can use JAVA_TOOL_OPTIONS environment variable.
+      (lsp-metals-server-args '(;; Metals claims to support range formatting by default but it supports range
+                                ;; formatting of multiline strings only. You might want to disable it so that
+                                ;; emacs can use indentation provided by scala-mode.
+                                "-J-Dmetals.allow-multiline-string-formatting=off"
+                                ;; Enable unicode icons. But be warned that emacs might not render unicode
+                                ;; correctly in all cases.
+                                "-J-Dmetals.icons=unicode"))
+      ;; In case you want semantic highlighting. This also has to be enabled in lsp-mode using
+      ;; `lsp-semantic-tokens-enable' variable. Also you might want to disable highlighting of modifiers
+      ;; setting `lsp-semantic-tokens-apply-modifiers' to `nil' because metals sends `abstract' modifier
+      ;; which is mapped to `keyword' face.
+      (lsp-metals-enable-semantic-highlighting t)
+      :hook (scala-mode . lsp))
 #+end_src
 
 ** Dart
